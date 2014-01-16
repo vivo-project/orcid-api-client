@@ -1,0 +1,14 @@
+Product
+jaxb-ri-2.2.7
+
+Purpose
+The compile JAXB classes from the message schema.
+
+The following components were included from this package:
+jaxb-core.jar
+jaxb-impl.jar
+jaxb-xjc.jar
+
+The following license file apply to this package:
+License.txt
+ThirdPartyLicenseReadme.txt

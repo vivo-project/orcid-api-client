@@ -1,0 +1,14 @@
+Product
+apache-cxf-2.7.8
+
+Purpose
+To provide richer code in the JAXB-generated classes.
+
+The following components were included from this package:
+cxf-xjc-runtime-2.6.2.jar
+cxf-xjc-ts-2.6.2.jar
+
+The following license file apply to this package:
+LICENSE
+NOTICE
+README
