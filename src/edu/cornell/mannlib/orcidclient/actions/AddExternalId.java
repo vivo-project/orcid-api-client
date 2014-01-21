@@ -12,10 +12,8 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.entity.ContentType;
 
-import edu.cornell.mannlib.orcidclient.MessageParser;
 import edu.cornell.mannlib.orcidclient.OrcidClientContext;
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
-import edu.cornell.mannlib.orcidclient.OrcidMessageException;
 import edu.cornell.mannlib.orcidclient.auth.AccessToken;
 import edu.cornell.mannlib.orcidclient.orcidmessage.ExternalIdCommonName;
 import edu.cornell.mannlib.orcidclient.orcidmessage.ExternalIdReference;
@@ -65,7 +63,7 @@ public class AddExternalId {
 	private static final Log log = LogFactory.getLog(AddExternalId.class);
 
 	private final OrcidClientContext occ;
-	
+
 	public AddExternalId() throws OrcidClientException {
 		this.occ = OrcidClientContext.getInstance();
 	}
@@ -74,14 +72,14 @@ public class AddExternalId {
 			String externalIdReference, String externalIdUrl,
 			AccessToken accessToken) throws OrcidClientException {
 
-		String requestUrl = "http://api.sandbox-1.orcid.org/v1.0.23/"
-				+ accessToken.getOrcid() + "/orcid-bio/external-identifiers";
+		String requestUrl = occ.getApiBaseUrl() + accessToken.getOrcid()
+				+ "/orcid-bio/external-identifiers";
 
 		try {
 			OrcidMessage outMessage = buildOutgoingMessage(
 					externalIdCommonName, externalIdReference, externalIdUrl);
 			String outString = occ.marshall(outMessage);
-			log.info("Outgoing string: " + outString);
+			log.debug("Outgoing string: " + outString);
 
 			Request request = Request
 					.Post(requestUrl)
@@ -95,14 +93,15 @@ public class AddExternalId {
 			Response response = request.execute();
 			Content content = response.returnContent();
 			String string = content.asString();
-			log.info("Content from AddExternalID was: " + string);
-			return new MessageParser().parse(string);
+			log.debug("Content from AddExternalID was: " + string);
+
+			return occ.unmarshall(string);
 		} catch (HttpResponseException e) {
 			// Not authorized. Something funky.
 			log.error("HttpResponse status code: " + e.getStatusCode(), e);
 		} catch (IOException e) {
-			log.error("failed to get authtoken.", e);
-		} catch (OrcidMessageException e) {
+			log.error("problem in HTTP communication.", e);
+		} catch (OrcidClientException e) {
 			log.error("failed to parse the message.", e);
 		}
 		return null;

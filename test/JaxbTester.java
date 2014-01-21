@@ -1,5 +1,5 @@
-import edu.cornell.mannlib.orcidclient.MessageParser;
-import edu.cornell.mannlib.orcidclient.OrcidMessageException;
+import edu.cornell.mannlib.orcidclient.OrcidClientContext;
+import edu.cornell.mannlib.orcidclient.OrcidClientException;
 import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
 
 
@@ -44,10 +44,10 @@ public class JaxbTester {
 
 	public JaxbTester() {
 		try {
-			OrcidMessage om = new MessageParser().parse(xml);
+			OrcidMessage om = OrcidClientContext.getInstance().unmarshall(xml);
 			System.out.println("Message is: " + om);
 			System.out.println("Orcid ID = "+ om.getOrcidProfile().getOrcid().getValue());
-		} catch (OrcidMessageException e) {
+		} catch (OrcidClientException e) {
 			e.getCause().printStackTrace();
 		}
 	}
