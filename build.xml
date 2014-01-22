@@ -7,10 +7,22 @@
 	     the dependencies.
 	     ====================================================================== -->
 
+	<property name="src.dir" location="src" />
+	<property name="lib.dir" location="lib" />
 	<property name="schema.file" location="schema/orcid-message-1.0.23.xsd" />
 
 	<property name="build.dir" location=".build" />
 	<property name="src.generated.dir" location="${build.dir}/generated" />
+	<property name="compiled.dir" location="${build.dir}/classes" />
+
+	<property name="distribute.dir" location="distribute" />
+	<property name="product.name" value="orcid-api-client" />
+	<property name="release.level" value="0.1" />
+	<property name="distribute.jar.file"
+	          location="${distribute.dir}/${product.name}-${release.level}.jar" />
+	<property name="distribute.zip.file"
+	          location="${distribute.dir}/${product.name}-${release.level}.zip" />
+
 
 	<!-- ================================= 
           target: describe              
@@ -30,21 +42,28 @@ zip        - Include the JAR file and the dependency JARs into a ZIP file.
          ================================= -->
 	<target name="clean" description="Delete all artifacts.">
 		<delete dir="${build.dir}" />
+		<delete dir="${distribute.dir}" />
 	</target>
 
 	<!-- - - - - - - - - - - - - - - - - - 
-          target: prepare                      
+          target: prepare
          - - - - - - - - - - - - - - - - - -->
 	<target name="prepare">
 		<mkdir dir="${build.dir}" />
+		<mkdir dir="${compiled.dir}" />
 		<mkdir dir="${src.generated.dir}" />
+
+		<mkdir dir="${distribute.dir}" />
 	</target>
 
 
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: generate-sources
+         - - - - - - - - - - - - - - - - - -->
 	<target name="generate-sources" depends="prepare">
 		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
 			<classpath>
-				<fileset dir="lib" includes="jaxb-xjc.jar" />
+				<fileset dir="${lib.dir}" includes="jaxb-xjc.jar" />
 			</classpath>
 		</taskdef>
 
@@ -55,7 +74,7 @@ zip        - Include the JAR file and the dependency JARs into a ZIP file.
 		     removeOldOutput="true">
 			<arg line="-Xts:style:multiline" />
 			<classpath>
-				<fileset dir="lib">
+				<fileset dir="${lib.dir}">
 					<include name="cxf-xjc-ts-2.6.2.jar" />
 					<include name="jaxb-xjc.jar" />
 					<include name="jaxb-core.jar" />
@@ -65,4 +84,58 @@ zip        - Include the JAR file and the dependency JARs into a ZIP file.
 			<produces dir="${src.generated.dir}" />
 		</xjc>
 	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: compile
+         - - - - - - - - - - - - - - - - - -->
+	<target name="compile" depends="generate-sources">
+		<path id="compile.classpath">
+			<fileset dir="${lib.dir}" />
+		</path>
+
+		<!-- deletes all files that depend on changed .java files -->
+		<depend srcdir="${src.dir};${src.generated.dir}"
+		        destdir="${compiled.dir}"
+		        closure="false"
+		        cache="${build.dir}/compileDependencyCache">
+			<classpath refid="compile.classpath" />
+		</depend>
+
+		<javac srcdir="${src.dir};${src.generated.dir}"
+		       destdir="${compiled.dir}"
+		       debug="true"
+		       encoding="UTF8"
+		       includeantruntime="false"
+		       optimize="true"
+		       source="1.7">
+			<classpath refid="compile.classpath" />
+		</javac>
+
+	</target>
+
+	<!-- ================================= 
+          target: jar              
+         ================================= -->
+	<target name="jar"
+	        depends="compile"
+	        description="Compile and create the JAR file.">
+		<jar destfile="${distribute.jar.file}" basedir="${compiled.dir}">
+		</jar>
+	</target>
+
+	<!-- ================================= 
+          target: zip              
+         ================================= -->
+	<target name="zip" depends="jar" description="Create the ZIP with all dependencies">
+		<zip destfile="${distribute.zip.file}">
+			<fileset dir="${lib.dir}" />
+			<path path="${distribute.jar.file}" />
+		</zip>
+	</target>
+	
+	<!-- ================================= 
+          target: all              
+         ================================= -->
+    <target name="all" depends="clean, zip" description="Build the ZIP file from scratch"/>
+
 </project>
