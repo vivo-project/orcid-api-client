@@ -13,7 +13,6 @@ import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
-import edu.cornell.mannlib.orcidclient.auth.AuthorizationManager;
 import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
 
 /**
@@ -31,7 +30,6 @@ public class OrcidClientContext {
 	}
 
 	private final JAXBContext jaxbContext;
-	private final AuthorizationManager authManager = new AuthorizationManager();
 
 	private OrcidClientContext() throws OrcidClientException {
 		try {
@@ -53,10 +51,6 @@ public class OrcidClientContext {
 
 	public String getMessageVersion() {
 		return "1.0.23";
-	}
-
-	public AuthorizationManager getAuthManager() {
-		return authManager;
 	}
 
 	public String marshall(OrcidMessage message) throws OrcidClientException {
