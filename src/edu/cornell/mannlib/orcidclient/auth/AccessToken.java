@@ -9,15 +9,28 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 
 /**
- * The information associated with an ORCID Access Token.
+ * The information associated with an ORCID Access Token. Immutable.
  */
 public class AccessToken {
+	public static final AccessToken NO_TOKEN = new AccessToken();
+
 	private final String accessToken;
 	private final String tokenType;
 	private final String refreshToken;
 	private final Integer expiresIn;
 	private final String scope;
 	private final String orcid;
+	private final String toString;
+
+	private AccessToken() {
+		this.accessToken = "NONE";
+		this.tokenType = "";
+		this.refreshToken = "";
+		this.expiresIn = 0;
+		this.scope = "";
+		this.orcid = "";
+		this.toString = "No AccessToken";
+	}
 
 	public AccessToken(String jsonString) throws AccessTokenFormatException {
 		try {
@@ -29,6 +42,11 @@ public class AccessToken {
 			this.expiresIn = json.getInt("expires_in");
 			this.scope = json.getString("scope");
 			this.orcid = json.getString("orcid");
+
+			this.toString = "AccessToken[accessToken=" + accessToken
+					+ ", tokenType=" + tokenType + ", refreshToken="
+					+ refreshToken + ", expiresIn=" + expiresIn + ", scope="
+					+ scope + ", orcid=" + orcid + "]";
 		} catch (Exception e) {
 			throw new AccessTokenFormatException(
 					"Failed to parse the ORID Access Token. JSON is '"
@@ -62,9 +80,6 @@ public class AccessToken {
 
 	@Override
 	public String toString() {
-		return "AccessToken[accessToken=" + accessToken + ", tokenType="
-				+ tokenType + ", refreshToken=" + refreshToken + ", expiresIn="
-				+ expiresIn + ", scope=" + scope + ", orcid=" + orcid + "]";
+		return toString;
 	}
-
 }

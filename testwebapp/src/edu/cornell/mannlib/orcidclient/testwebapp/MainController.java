@@ -3,7 +3,6 @@
 package edu.cornell.mannlib.orcidclient.testwebapp;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -14,19 +13,43 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
+
 /**
  * TODO
  */
 public class MainController extends HttpServlet {
+	private OrcidClientContext occ;
+	
+	@Override
+	public void init() throws ServletException {
+		occ = OrcidClientContext.getInstance();
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		resp.setContentType("text/html");
-		PrintWriter w = resp.getWriter();
-		w.println("<h2>Request parameters:</h2>");
-		w.println("<div>" + dumpParameterMap(req) + "</div>");
+		if (req.getParameter("ReadProfile") != null) {
+			new ProfileReader(req, resp).exec();
+		} else if (req.getParameter("AddExternalId") != null) {
+			doAddExternalID(req, resp);
+		} else {
+			doBogusRequest(req, resp);
+		}
 	}
+
+	private void doAddExternalID(HttpServletRequest req,
+			HttpServletResponse resp) {
+		// TODO Auto-generated method stub
+		throw new RuntimeException("MainController.doAddExternalID() not implemented.");
+	}
+
+
+	private void doBogusRequest(HttpServletRequest req, HttpServletResponse resp) {
+		// TODO Auto-generated method stub
+		throw new RuntimeException("MainController.doBogusRequest() not implemented.");
+	}
+
 
 	private String dumpParameterMap(HttpServletRequest req) {
 		@SuppressWarnings("unchecked")

@@ -1,5 +1,5 @@
-import edu.cornell.mannlib.orcidclient.OrcidClientContext;
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
+import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
 import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
 
 

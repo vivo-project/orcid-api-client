@@ -18,10 +18,6 @@
 
 	<property name="tomcat.home" location="/users/jeb228/ORCID/tomcat" />
 
-	<path id="compile.classpath">
-		<fileset dir="${lib.dir}" includes="*.jar" />
-	</path>
-
 
 	<!-- ================================= 
           target: describe              
@@ -69,7 +65,7 @@ deploy   - Deploy the application directly into the Tomcat webapps directory.
 			</fileset>
 		</copy>
 		<copy todir="${war.dir}/WEB-INF/lib">
-			<zipfileset src="../distribute/orcid-api-client-0.1.zip"/>
+			<zipfileset src="../distribute/orcid-api-client-0.1.zip" />
 		</copy>
 	</target>
 
@@ -79,6 +75,11 @@ deploy   - Deploy the application directly into the Tomcat webapps directory.
 	<target name="compile"
 	        depends="collect"
 	        description="--> Compile Java sources">
+		<path id="compile.classpath">
+			<fileset dir="${lib.dir}" />
+			<fileset dir="${war.dir}/WEB-INF/lib" />
+		</path>
+
 		<javac srcdir="${src.dir}"
 		       destdir="${war.classes.dir}"
 		       debug="true"
