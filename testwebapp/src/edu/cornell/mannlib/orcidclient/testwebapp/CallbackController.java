@@ -30,6 +30,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -80,6 +81,7 @@ public class CallbackController extends HttpServlet {
 		try {
 			authStatus.setSuccess(getAccessTokenFromAuthCode(authCode));
 		} catch (Exception e) {
+			log.error("Failed to get the Access Token", e);
 			authStatus.setFailure(e.toString());
 			fail(req, resp, "Failed to get the Access Token: " + e);
 		}
@@ -99,8 +101,13 @@ public class CallbackController extends HttpServlet {
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		try {
-			return httpClient.execute(postRequest,
-					new AccessTokenResponseHandler());
+			CloseableHttpResponse response = httpClient.execute(postRequest);
+			try {
+				String content = EntityUtils.toString(response.getEntity());
+				return new AccessToken(content);
+			}finally {
+				response.close();
+			}
 		} catch (ClientProtocolException e) {
 			Throwable cause = e.getCause();
 			if (cause instanceof AccessTokenFormatException) {
