@@ -1,5 +1,5 @@
 Product Name
-Apache HttpComponents 4.2.5
+Apache HttpComponents 4.3.2
 
 Home Page
 http://hc.apache.org/
@@ -8,9 +8,9 @@ Purpose
 To execute the HTTP calls that are internal to the ORCID client.
 
 The following components were included from this package:
-/lib/fluent-hc-4.2.5.jar
-/lib/httpclient-4.2.5.jar
-/lib/httpcore-4.2.4.jar
+/lib/fluent-hc-4.3.2.jar
+/lib/httpclient-4.3.2.jar
+/lib/httpcore-4.3.1.jar
 
 The following license file apply to this package:
 LICENSE.txt
