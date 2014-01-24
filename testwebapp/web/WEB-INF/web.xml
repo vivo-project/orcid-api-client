@@ -7,7 +7,7 @@
 	version="2.4">
 
 	<listener>
-		<listener-class>edu.cornell.mannlib.orcidclient.testwebapp.ContextSetup</listener-class>
+		<listener-class>edu.cornell.mannlib.orcidclient.testwebapp.OrcidContextSetup</listener-class>
 	</listener>
 
 	<servlet>

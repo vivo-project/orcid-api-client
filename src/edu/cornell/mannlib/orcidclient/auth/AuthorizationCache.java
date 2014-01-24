@@ -12,12 +12,17 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import edu.cornell.mannlib.orcidclient.actions.ApiAction;
 
 /**
  * TODO
  */
 public class AuthorizationCache {
+	private static final Log log = LogFactory.getLog(AuthorizationCache.class);
+
 	private static final String ATTRIBUTE_NAME = AuthorizationCache.class
 			.getName();
 
@@ -41,6 +46,8 @@ public class AuthorizationCache {
 
 	public AuthorizationStatus createStatus(ApiAction action,
 			String successUrl, String failureUrl) {
+		log.debug("createStatus: action=" + action + ", successUrl="
+				+ successUrl + ", failureUrl=" + failureUrl);
 		AuthorizationStatus authStatus = new AuthorizationStatus(action,
 				successUrl, failureUrl, PENDING);
 		map.put(action, authStatus);
@@ -50,18 +57,23 @@ public class AuthorizationCache {
 	public AuthorizationStatus getStatus(ApiAction action) {
 		AuthorizationStatus authStatus = map.get(action);
 		if (authStatus == null) {
-			return new AuthorizationStatus(action, "/", "/", NONE);
-		} else {
-			return authStatus;
+			authStatus = new AuthorizationStatus(action, "/", "/", NONE);
 		}
+		log.debug("getStatus for action: " + action +
+				", status=" + authStatus);
+		return authStatus;
 	}
 
 	public AuthorizationStatus getStatus(String token) {
 		for (AuthorizationStatus as : map.values()) {
 			if (as.getId().equals(token)) {
+				log.debug("getStatus for token: " + token +
+						", status=" + as);
 				return as;
 			}
 		}
+		log.debug("getStatus for token: " + token +
+				", status=NONE");
 		return new AuthorizationStatus(NO_ACTION, "/", "/", NONE);
 	}
 

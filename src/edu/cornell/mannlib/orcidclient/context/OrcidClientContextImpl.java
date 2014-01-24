@@ -22,6 +22,8 @@ import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIUtils;
 
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
@@ -33,6 +35,9 @@ import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
  * TODO
  */
 public class OrcidClientContextImpl extends OrcidClientContext {
+	private static final Log log = LogFactory
+			.getLog(OrcidClientContextImpl.class);
+
 	private final Map<Setting, String> settings;
 	private final JAXBContext jaxbContext;
 
@@ -106,6 +111,7 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 
 			StringWriter sw = new StringWriter();
 			m.marshal(message, sw);
+			log.debug("marshall message=" + message + "\n, string=" + sw);
 			return sw.toString();
 		} catch (PropertyException e) {
 			throw new OrcidClientException("Failed to create the Marshaller", e);
@@ -123,11 +129,21 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 			StreamSource source = new StreamSource(new StringReader(xml));
 			JAXBElement<OrcidMessage> doc = u.unmarshal(source,
 					OrcidMessage.class);
+			log.debug("unmarshall string=" + xml + "\n, message="
+					+ doc.getValue());
 			return doc.getValue();
 		} catch (JAXBException e) {
 			throw new OrcidClientException("Failed to unmarshall the message '"
 					+ xml + "'", e);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "OrcidClientContextImpl[settings=" + settings
+				+ ", callbackUrl=" + callbackUrl + ", authCodeRequestUrl="
+				+ authCodeRequestUrl + ", accessTokenRequestUrl="
+				+ accessTokenRequestUrl + "]";
 	}
 
 }

@@ -6,6 +6,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
 import edu.cornell.mannlib.orcidclient.actions.ActionManager;
 import edu.cornell.mannlib.orcidclient.auth.AuthorizationManager;
@@ -15,6 +18,8 @@ import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
  * TODO
  */
 public abstract class OrcidClientContext {
+	private static final Log log = LogFactory.getLog(OrcidClientContext.class);
+
 	public enum Setting {
 		CLIENT_ID, API_BASE_URL, MESSAGE_VERSION, OAUTH_URL, CALLBACK_PATH, WEBAPP_BASE_URL, CLIENT_SECRET
 	}
@@ -31,6 +36,7 @@ public abstract class OrcidClientContext {
 			throw new IllegalStateException("Already initialized: " + instance);
 		} else {
 			instance = new OrcidClientContextImpl(settings);
+			log.debug("initialized: " + instance);
 		}
 	}
 

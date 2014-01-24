@@ -9,6 +9,8 @@ import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIBuilder;
 
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
@@ -19,6 +21,9 @@ import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
  * TODO
  */
 public class AuthorizationManager {
+	private static final Log log = LogFactory
+			.getLog(AuthorizationManager.class);
+	
 	public static final String NOT_AUTHENTICATED = "Not Authenticated";
 
 	private final OrcidClientContext context;
@@ -54,6 +59,8 @@ public class AuthorizationManager {
 
 	public String seekAuthorization(ApiAction action, String successUrl,
 			String failureUrl) throws OrcidClientException {
+		log.debug("seekAuthorization: action=" + action + ", successUrl="
+				+ successUrl + ", failureUrl=" + failureUrl);
 		AuthorizationStatus authStatus = cache.createStatus(action, successUrl,
 				failureUrl);
 		try {
@@ -63,6 +70,7 @@ public class AuthorizationManager {
 					.addParameter("response_type", "code")
 					.addParameter("redirect_uri", context.getCallbackUrl())
 					.addParameter("state", authStatus.getId()).build();
+			log.debug("fullUri=" + fullUri);
 			return fullUri.toString();
 		} catch (URISyntaxException e) {
 			throw new OrcidClientException(
