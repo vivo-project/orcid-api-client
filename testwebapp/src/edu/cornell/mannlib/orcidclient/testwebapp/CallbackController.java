@@ -75,9 +75,11 @@ public class CallbackController extends HttpServlet {
 
 		try {
 			authStatus.setSuccess(getAccessTokenFromAuthCode(authCode));
+			resp.sendRedirect(authStatus.getSuccessUrl());
 		} catch (Exception e) {
 			log.error("Failed to get the Access Token", e);
 			authStatus.setFailure(e.toString());
+			resp.sendRedirect(authStatus.getFailureUrl());
 			fail(req, resp, "Failed to get the Access Token: " + e);
 		}
 	}

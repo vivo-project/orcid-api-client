@@ -47,11 +47,6 @@ public class AuthorizationManager {
 	 * Create an AuthorizationStatus object in the session, and include that in
 	 * the URL, so we can track the progress.
 	 */
-	public String seekAuthorization(ApiAction action)
-			throws OrcidClientException {
-		return seekAuthorization(action, returnUrl());
-	}
-
 	public String seekAuthorization(ApiAction action, String returnUrl)
 			throws OrcidClientException {
 		return seekAuthorization(action, returnUrl, returnUrl);
@@ -84,10 +79,6 @@ public class AuthorizationManager {
 
 	public void setOrcId(String orcId) {
 		this.orcId = orcId;
-	}
-
-	private String returnUrl() {
-		return req.getRequestURL().toString();
 	}
 
 	public AuthorizationStatus getAuthorizationStatus(ApiAction action) {

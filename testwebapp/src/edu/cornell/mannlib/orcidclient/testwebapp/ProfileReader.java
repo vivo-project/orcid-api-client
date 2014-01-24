@@ -6,6 +6,7 @@ import static edu.cornell.mannlib.orcidclient.actions.ApiAction.READ_PROFILE;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -98,14 +99,15 @@ public class ProfileReader {
 	private void seekAuthorization() throws IOException {
 		String authUrl;
 		try {
-			authUrl = authManager.seekAuthorization(READ_PROFILE);
+			String returnUrl = occ.resolvePathWithWebapp("request?readProfile=true");
+			authUrl = authManager.seekAuthorization(READ_PROFILE, returnUrl);
 			resp.sendRedirect(authUrl);
-		} catch (OrcidClientException e) {
+		} catch (OrcidClientException | URISyntaxException e) {
 			showInternalError(e);
 		}
 	}
 
-	private void showInternalError(OrcidClientException e) {
+	private void showInternalError(Exception e) {
 		out.println("<html><head></head><body>");
 		out.println("<h1>Internal Error</h1>");
 		out.println("<pre>");

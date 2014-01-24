@@ -2,6 +2,7 @@
 
 package edu.cornell.mannlib.orcidclient.context;
 
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -68,6 +69,9 @@ public abstract class OrcidClientContext {
 	public abstract String marshall(OrcidMessage message)
 			throws OrcidClientException;
 
+	public abstract String resolvePathWithWebapp(String path)
+			throws URISyntaxException;
+
 	// ----------------------------------------------------------------------
 	// The empty implementation
 	// ----------------------------------------------------------------------
@@ -114,6 +118,11 @@ public abstract class OrcidClientContext {
 
 		@Override
 		public String marshall(OrcidMessage message) {
+			throw new IllegalStateException(MESSAGE);
+		}
+
+		@Override
+		public String resolvePathWithWebapp(String path) {
 			throw new IllegalStateException(MESSAGE);
 		}
 

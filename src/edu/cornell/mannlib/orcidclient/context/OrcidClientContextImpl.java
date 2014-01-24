@@ -59,12 +59,12 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 			String packageName = OrcidMessage.class.getPackage().getName();
 			jaxbContext = JAXBContext.newInstance(packageName);
 
-			URI baseUri = new URI(getSetting(WEBAPP_BASE_URL));
-			callbackUrl = URIUtils.resolve(baseUri, getSetting(CALLBACK_PATH))
+			callbackUrl = resolvePathWithWebapp(getSetting(CALLBACK_PATH));
+			
+			authCodeRequestUrl = new URI(getSetting(OAUTH_AUTHORIZE_URL))
 					.toString();
-
-			authCodeRequestUrl = new URI(getSetting(OAUTH_AUTHORIZE_URL)).toString();
-			accessTokenRequestUrl = new URI(getSetting(OAUTH_TOKEN_URL)).toString();
+			accessTokenRequestUrl = new URI(getSetting(OAUTH_TOKEN_URL))
+					.toString();
 		} catch (JAXBException | URISyntaxException e) {
 			throw new OrcidClientException(
 					"Failed to create the OrcidClientContext", e);
@@ -137,11 +137,16 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 	}
 
 	@Override
+	public String resolvePathWithWebapp(String path) throws URISyntaxException {
+		URI baseUri = new URI(getSetting(WEBAPP_BASE_URL));
+		return URIUtils.resolve(baseUri, path).toString();
+	}
+
+	@Override
 	public String toString() {
-		return "OrcidClientContextImpl[settings=" + settings
-				+ ", callbackUrl=" + callbackUrl + ", authCodeRequestUrl="
-				+ authCodeRequestUrl + ", accessTokenRequestUrl="
-				+ accessTokenRequestUrl + "]";
+		return "OrcidClientContextImpl[settings=" + settings + ", callbackUrl="
+				+ callbackUrl + ", authCodeRequestUrl=" + authCodeRequestUrl
+				+ ", accessTokenRequestUrl=" + accessTokenRequestUrl + "]";
 	}
 
 }
