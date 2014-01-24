@@ -3,7 +3,8 @@
 package edu.cornell.mannlib.orcidclient.context;
 
 import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.CALLBACK_PATH;
-import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.OAUTH_URL;
+import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.OAUTH_AUTHORIZE_URL;
+import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.OAUTH_TOKEN_URL;
 import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.WEBAPP_BASE_URL;
 
 import java.io.StringReader;
@@ -62,11 +63,8 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 			callbackUrl = URIUtils.resolve(baseUri, getSetting(CALLBACK_PATH))
 					.toString();
 
-			URI oauthUri = new URI(getSetting(OAUTH_URL));
-			authCodeRequestUrl = URIUtils.resolve(oauthUri, "authorize")
-					.toString();
-			accessTokenRequestUrl = URIUtils.resolve(oauthUri, "token")
-					.toString();
+			authCodeRequestUrl = new URI(getSetting(OAUTH_AUTHORIZE_URL)).toString();
+			accessTokenRequestUrl = new URI(getSetting(OAUTH_TOKEN_URL)).toString();
 		} catch (JAXBException | URISyntaxException e) {
 			throw new OrcidClientException(
 					"Failed to create the OrcidClientContext", e);

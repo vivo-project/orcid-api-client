@@ -100,7 +100,7 @@ public class CallbackController extends HttpServlet {
 			try {
 				String content = EntityUtils.toString(response.getEntity());
 				return new AccessToken(content);
-			}finally {
+			} finally {
 				response.close();
 			}
 		} catch (ClientProtocolException e) {
@@ -135,50 +135,50 @@ public class CallbackController extends HttpServlet {
 		return "Request: " + req.getRequestURL() + ", parameters=" + prettyMap;
 	}
 
-//	private static class AccessTokenResponseHandler implements
-//			ResponseHandler<AccessToken> {
-//		private int statusCode;
-//		private String reasonPhrase = "";
-//		private String content = "";
-//
-//		@Override
-//		public AccessToken handleResponse(HttpResponse response)
-//				throws ClientProtocolException, IOException {
-//			StatusLine statusLine = response.getStatusLine();
-//			this.statusCode = statusLine.getStatusCode();
-//			this.reasonPhrase = statusLine.getReasonPhrase();
-//
-//			if (statusCode >= 300) {
-//				throw new HttpResponseException(statusLine.getStatusCode(),
-//						statusLine.getReasonPhrase());
-//			}
-//			HttpEntity entity = response.getEntity();
-//			if (entity == null) {
-//				throw new ClientProtocolException(
-//						"Response contains no content");
-//			}
-//			this.content = EntityUtils.toString(entity);
-//			try {
-//				return new AccessToken(this.content);
-//			} catch (AccessTokenFormatException e) {
-//				throw new ClientProtocolException(
-//						"Failed to parse the access token", e);
-//			}
-//		}
-//
-//		public int getStatusCode() {
-//			return statusCode;
-//		}
-//
-//		public String getReasonPhrase() {
-//			return reasonPhrase;
-//		}
-//
-//		public String getContent() {
-//			return content;
-//		}
-//
-//	}
+	// private static class AccessTokenResponseHandler implements
+	// ResponseHandler<AccessToken> {
+	// private int statusCode;
+	// private String reasonPhrase = "";
+	// private String content = "";
+	//
+	// @Override
+	// public AccessToken handleResponse(HttpResponse response)
+	// throws ClientProtocolException, IOException {
+	// StatusLine statusLine = response.getStatusLine();
+	// this.statusCode = statusLine.getStatusCode();
+	// this.reasonPhrase = statusLine.getReasonPhrase();
+	//
+	// if (statusCode >= 300) {
+	// throw new HttpResponseException(statusLine.getStatusCode(),
+	// statusLine.getReasonPhrase());
+	// }
+	// HttpEntity entity = response.getEntity();
+	// if (entity == null) {
+	// throw new ClientProtocolException(
+	// "Response contains no content");
+	// }
+	// this.content = EntityUtils.toString(entity);
+	// try {
+	// return new AccessToken(this.content);
+	// } catch (AccessTokenFormatException e) {
+	// throw new ClientProtocolException(
+	// "Failed to parse the access token", e);
+	// }
+	// }
+	//
+	// public int getStatusCode() {
+	// return statusCode;
+	// }
+	//
+	// public String getReasonPhrase() {
+	// return reasonPhrase;
+	// }
+	//
+	// public String getContent() {
+	// return content;
+	// }
+	//
+	// }
 
 	private static class PostRequestBuilder {
 		private final HttpPost post;
@@ -200,7 +200,7 @@ public class CallbackController extends HttpServlet {
 
 		HttpPost build() {
 			UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters,
-					Consts.UTF_8);
+					Consts.ISO_8859_1);
 			post.setEntity(entity);
 			return post;
 		}
