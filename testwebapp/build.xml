@@ -98,8 +98,10 @@ deploy   - Deploy the application directly into the Tomcat webapps directory.
 	<target name="deploy"
 	        depends="compile"
 	        description="--> Build the app and install in Tomcat">
+		<!--		<property name="webapp.deploy.home"
+		          value="${tomcat.home}/webapps/${webapp.name}" /> -->
 		<property name="webapp.deploy.home"
-		          value="${tomcat.home}/webapps/${webapp.name}" />
+		          value="${tomcat.home}/webapps/orcivo" />
 
 		<mkdir dir="${webapp.deploy.home}" />
 

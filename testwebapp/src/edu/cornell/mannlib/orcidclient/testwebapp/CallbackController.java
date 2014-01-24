@@ -22,13 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Consts;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -140,50 +135,50 @@ public class CallbackController extends HttpServlet {
 		return "Request: " + req.getRequestURL() + ", parameters=" + prettyMap;
 	}
 
-	private static class AccessTokenResponseHandler implements
-			ResponseHandler<AccessToken> {
-		private int statusCode;
-		private String reasonPhrase = "";
-		private String content = "";
-
-		@Override
-		public AccessToken handleResponse(HttpResponse response)
-				throws ClientProtocolException, IOException {
-			StatusLine statusLine = response.getStatusLine();
-			this.statusCode = statusLine.getStatusCode();
-			this.reasonPhrase = statusLine.getReasonPhrase();
-
-			if (statusCode >= 300) {
-				throw new HttpResponseException(statusLine.getStatusCode(),
-						statusLine.getReasonPhrase());
-			}
-			HttpEntity entity = response.getEntity();
-			if (entity == null) {
-				throw new ClientProtocolException(
-						"Response contains no content");
-			}
-			this.content = EntityUtils.toString(entity);
-			try {
-				return new AccessToken(this.content);
-			} catch (AccessTokenFormatException e) {
-				throw new ClientProtocolException(
-						"Failed to parse the access token", e);
-			}
-		}
-
-		public int getStatusCode() {
-			return statusCode;
-		}
-
-		public String getReasonPhrase() {
-			return reasonPhrase;
-		}
-
-		public String getContent() {
-			return content;
-		}
-
-	}
+//	private static class AccessTokenResponseHandler implements
+//			ResponseHandler<AccessToken> {
+//		private int statusCode;
+//		private String reasonPhrase = "";
+//		private String content = "";
+//
+//		@Override
+//		public AccessToken handleResponse(HttpResponse response)
+//				throws ClientProtocolException, IOException {
+//			StatusLine statusLine = response.getStatusLine();
+//			this.statusCode = statusLine.getStatusCode();
+//			this.reasonPhrase = statusLine.getReasonPhrase();
+//
+//			if (statusCode >= 300) {
+//				throw new HttpResponseException(statusLine.getStatusCode(),
+//						statusLine.getReasonPhrase());
+//			}
+//			HttpEntity entity = response.getEntity();
+//			if (entity == null) {
+//				throw new ClientProtocolException(
+//						"Response contains no content");
+//			}
+//			this.content = EntityUtils.toString(entity);
+//			try {
+//				return new AccessToken(this.content);
+//			} catch (AccessTokenFormatException e) {
+//				throw new ClientProtocolException(
+//						"Failed to parse the access token", e);
+//			}
+//		}
+//
+//		public int getStatusCode() {
+//			return statusCode;
+//		}
+//
+//		public String getReasonPhrase() {
+//			return reasonPhrase;
+//		}
+//
+//		public String getContent() {
+//			return content;
+//		}
+//
+//	}
 
 	private static class PostRequestBuilder {
 		private final HttpPost post;
