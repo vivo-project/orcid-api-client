@@ -63,9 +63,9 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 					.toString();
 
 			URI oauthUri = new URI(getSetting(OAUTH_URL));
-			authCodeRequestUrl = URIUtils.resolve(oauthUri, "/authorize")
+			authCodeRequestUrl = URIUtils.resolve(oauthUri, "authorize")
 					.toString();
-			accessTokenRequestUrl = URIUtils.resolve(oauthUri, "/token")
+			accessTokenRequestUrl = URIUtils.resolve(oauthUri, "token")
 					.toString();
 		} catch (JAXBException | URISyntaxException e) {
 			throw new OrcidClientException(
