@@ -11,8 +11,11 @@ import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
 import edu.cornell.mannlib.orcidclient.actions.ActionManager;
+import edu.cornell.mannlib.orcidclient.actions.ReadProfileAction;
 import edu.cornell.mannlib.orcidclient.auth.AuthorizationManager;
 import edu.cornell.mannlib.orcidclient.auth.AuthorizationStatus;
 import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
@@ -22,7 +25,6 @@ import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
  * TODO
  */
 public class ProfileReader {
-	private final HttpServletRequest req;
 	private final HttpServletResponse resp;
 	private final PrintWriter out;
 	private final OrcidClientContext occ;
@@ -31,7 +33,6 @@ public class ProfileReader {
 
 	public ProfileReader(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-		this.req = req;
 		this.resp = resp;
 		this.out = resp.getWriter();
 		resp.setContentType("text/html");
@@ -55,7 +56,7 @@ public class ProfileReader {
 			showAuthorizationFailure(authStatus);
 			break;
 		case SUCCESS:
-			fetchAndShowProfile();
+			fetchAndShowProfile(authStatus);
 			break;
 		default: // NONE
 			seekAuthorization();
@@ -64,7 +65,7 @@ public class ProfileReader {
 
 	private void showAuthorizationPending() {
 		out.println("<html><head></head><body>");
-		out.println("<h1>Authorization Failure</h1>");
+		out.println("<h1>Authorization Pending?</h1>");
 		out.println("</body></html>");
 	}
 
@@ -81,15 +82,16 @@ public class ProfileReader {
 		out.println("</body></html>");
 	}
 
-	private void fetchAndShowProfile() {
+	private void fetchAndShowProfile(AuthorizationStatus authStatus) {
 		try {
-			OrcidMessage message = actionManager.execute(READ_PROFILE);
+			OrcidMessage message = new ReadProfileAction(occ).execute(authStatus
+					.getAccessToken());
 			String marshalled = occ.marshall(message);
 
 			out.println("<html><head></head><body>");
 			out.println("<h1>User profile for " + authManager.getOrcId()
 					+ "</h1>");
-			out.println(marshalled);
+			out.println(StringEscapeUtils.escapeHtml(marshalled));
 			out.println("</body></html>");
 		} catch (OrcidClientException e) {
 			showInternalError(e);
@@ -99,7 +101,8 @@ public class ProfileReader {
 	private void seekAuthorization() throws IOException {
 		String authUrl;
 		try {
-			String returnUrl = occ.resolvePathWithWebapp("request?readProfile=true");
+			String returnUrl = occ
+					.resolvePathWithWebapp("request?ReadProfile=true");
 			authUrl = authManager.seekAuthorization(READ_PROFILE, returnUrl);
 			resp.sendRedirect(authUrl);
 		} catch (OrcidClientException | URISyntaxException e) {
