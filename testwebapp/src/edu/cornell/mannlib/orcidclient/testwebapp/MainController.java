@@ -13,12 +13,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
 
 /**
  * TODO
  */
 public class MainController extends HttpServlet {
+	private static final Log log = LogFactory.getLog(MainController.class);
+	
+	
 	private OrcidClientContext occ;
 	
 	@Override
@@ -29,6 +35,10 @@ public class MainController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		if (log.isDebugEnabled()) {
+			log.debug("Request parameters: " + dumpParameterMap(req));
+		}
+		
 		if (req.getParameter("ReadProfile") != null) {
 			new ProfileReader(req, resp).exec();
 		} else if (req.getParameter("AddExternalId") != null) {

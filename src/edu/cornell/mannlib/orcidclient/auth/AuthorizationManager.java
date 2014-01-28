@@ -109,6 +109,8 @@ public class AuthorizationManager {
 			} else {
 				authStatus.setFailure(errorDescription);
 			}
+			throw new OrcidClientException("Authorization request returned an error: error=" +
+					error +", errorDescription="+ errorDescription);
 		}
 
 		String authCode = req.getParameter("code");

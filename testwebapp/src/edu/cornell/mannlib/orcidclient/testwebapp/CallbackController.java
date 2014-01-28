@@ -4,6 +4,10 @@ package edu.cornell.mannlib.orcidclient.testwebapp;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,6 +39,10 @@ public class CallbackController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		if (log.isDebugEnabled()) {
+			log.debug("Request parameters: " + dumpParameterMap(req));
+		}
+		
 		AuthorizationManager authManager = occ.getAuthorizationManager(req);
 		try {
 			AuthorizationStatus authStatus = authManager
@@ -58,6 +66,17 @@ public class CallbackController extends HttpServlet {
 		out.println("<h1>Callback Failure</h1>");
 		out.println("<h2>" + message + "</h2>");
 		out.println("</body></html");
+	}
+
+	private String dumpParameterMap(HttpServletRequest req) {
+		@SuppressWarnings("unchecked")
+		Map<String, String[]> raw = req.getParameterMap();
+		Map<String, List<String>> cooked = new HashMap<>();
+
+		for (String name : raw.keySet()) {
+			cooked.put(name, Arrays.asList(raw.get(name)));
+		}
+		return cooked.toString();
 	}
 
 }
