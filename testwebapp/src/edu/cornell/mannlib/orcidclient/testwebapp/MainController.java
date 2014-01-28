@@ -32,18 +32,11 @@ public class MainController extends HttpServlet {
 		if (req.getParameter("ReadProfile") != null) {
 			new ProfileReader(req, resp).exec();
 		} else if (req.getParameter("AddExternalId") != null) {
-			doAddExternalID(req, resp);
+			new ExternalIdAdder(req, resp).exec();
 		} else {
 			doBogusRequest(req, resp);
 		}
 	}
-
-	private void doAddExternalID(HttpServletRequest req,
-			HttpServletResponse resp) {
-		// TODO Auto-generated method stub
-		throw new RuntimeException("MainController.doAddExternalID() not implemented.");
-	}
-
 
 	private void doBogusRequest(HttpServletRequest req, HttpServletResponse resp) {
 		// TODO Auto-generated method stub
