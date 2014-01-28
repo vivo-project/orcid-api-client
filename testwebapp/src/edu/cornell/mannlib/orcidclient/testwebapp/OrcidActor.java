@@ -42,12 +42,15 @@ public abstract class OrcidActor {
 		switch (authStatus.getState()) {
 		case PENDING:
 			showAuthorizationPending();
+			authManager.clearStatus(authStatus.getAction());
 			break;
 		case DECLINED:
 			showAuthorizationDeclined();
+			authManager.clearStatus(authStatus.getAction());
 			break;
 		case FAILED:
 			showAuthorizationFailure(authStatus);
+			authManager.clearStatus(authStatus.getAction());
 			break;
 		case SUCCESS:
 			performAction(authStatus);

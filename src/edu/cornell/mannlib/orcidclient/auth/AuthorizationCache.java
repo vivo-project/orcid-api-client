@@ -77,4 +77,8 @@ public class AuthorizationCache {
 		return new AuthorizationStatus(NO_ACTION, "/", "/", NONE);
 	}
 
+	public void clearStatus(ApiAction action) {
+		map.remove(action);
+	}
+
 }
