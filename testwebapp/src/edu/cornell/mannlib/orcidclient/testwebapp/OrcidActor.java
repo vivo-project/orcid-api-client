@@ -37,36 +37,35 @@ public abstract class OrcidActor {
 	}
 
 	public void exec() throws IOException {
-		AuthorizationStatus authStatus = authManager
+		AuthorizationStatus auth = authManager
 				.getAuthorizationStatus(READ_PROFILE);
-		switch (authStatus.getState()) {
-		case PENDING:
-			showAuthorizationPending();
-			authManager.clearStatus(authStatus.getAction());
-			break;
-		case DECLINED:
+		if (auth.isSeekingAuthorization()) {
+			showAuthorizationPending(auth);
+			authManager.clearStatus(auth.getAction());
+		} else if (auth.isSeekingAccessToken()) {
+			showAuthorizationPending(auth);
+			authManager.clearStatus(auth.getAction());
+		} else if (auth.isDenied()) {
 			showAuthorizationDeclined();
-			authManager.clearStatus(authStatus.getAction());
-			break;
-		case FAILED:
-			showAuthorizationFailure(authStatus);
-			authManager.clearStatus(authStatus.getAction());
-			break;
-		case SUCCESS:
-			performAction(authStatus);
-			break;
-		default: // NONE
+			authManager.clearStatus(auth.getAction());
+		} else if (auth.isFailure()) {
+			showAuthorizationFailure(auth);
+			authManager.clearStatus(auth.getAction());
+		} else if (auth.isSuccess()) {
+			performAction(auth);
+		} else { // NONE
 			seekAuthorization();
 		}
 	}
 
 	protected abstract void performAction(AuthorizationStatus authStatus);
-	
+
 	protected abstract void seekAuthorization() throws IOException;
 
-	protected void showAuthorizationPending() {
+	protected void showAuthorizationPending(AuthorizationStatus authStatus) {
 		out.println("<html><head></head><body>");
 		out.println("<h1>Authorization Pending?</h1>");
+		out.println("<pre>" + authStatus + "</pre>");
 		out.println("</body></html>");
 	}
 

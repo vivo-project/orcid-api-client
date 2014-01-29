@@ -2,7 +2,6 @@
 
 package edu.cornell.mannlib.orcidclient.auth;
 
-import static edu.cornell.mannlib.orcidclient.auth.AuthorizationStatus.State.PENDING;
 import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.CLIENT_ID;
 import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.CLIENT_SECRET;
 
@@ -23,6 +22,7 @@ import org.apache.http.client.utils.URIBuilder;
 
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
 import edu.cornell.mannlib.orcidclient.actions.ApiAction;
+import edu.cornell.mannlib.orcidclient.auth.AuthorizationStatus.State;
 import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
 
 /**
@@ -64,8 +64,8 @@ public class AuthorizationManager {
 			String failureUrl) throws OrcidClientException {
 		log.debug("seekAuthorization: action=" + action + ", successUrl="
 				+ successUrl + ", failureUrl=" + failureUrl);
-		AuthorizationStatus authStatus = cache.createStatus(action, successUrl,
-				failureUrl);
+		AuthorizationStatus authStatus = cache.store(AuthorizationStatus
+				.create(action, successUrl, failureUrl));
 		try {
 			URI fullUri = new URIBuilder(context.getAuthCodeRequestUrl())
 					.addParameter("client_id", context.getSetting(CLIENT_ID))
@@ -88,56 +88,88 @@ public class AuthorizationManager {
 	 */
 	public AuthorizationStatus processAuthorizationResponse()
 			throws OrcidClientException {
+		AuthorizationStatus auth = getExistingAuthStatus();
+
+		if (!auth.isSeekingAuthorization()) {
+			return recordInvalidState(auth);
+		}
+
+		if (isError()) {
+			return recordError(auth);
+		}
+
+		if (isCodePresent()) {
+			recordCode(auth);
+		} else {
+			return recordNoCode(auth);
+		}
+
+		return getAccessTokenFromAuthCode(auth);
+	}
+
+	private AuthorizationStatus getExistingAuthStatus()
+			throws OrcidClientException {
 		String token = req.getParameter("state");
 		if (token == null || token.isEmpty()) {
 			throw new OrcidClientException(
 					"Request did not contain a 'state' parameter");
 		}
 
-		AuthorizationStatus authStatus = getAuthorizationStatus(token);
-		if (authStatus.getState() != PENDING) {
+		AuthorizationStatus auth = getAuthorizationStatus(token);
+		if (auth.isNone()) {
 			throw new OrcidClientException(
-					"Authorization request is not pending: token=" + token
-							+ ", status=" + authStatus);
+					"Not seeking authorization for this action: " + auth);
 		}
 
-		String error = req.getParameter("error");
-		if (error != null && !error.isEmpty()) {
-			String errorDescription = req.getParameter("error_description");
-			if (errorDescription == null || errorDescription.isEmpty()) {
-				authStatus.setFailure("unknown error");
-			} else {
-				authStatus.setFailure(errorDescription);
-			}
-			throw new OrcidClientException("Authorization request returned an error: error=" +
-					error +", errorDescription="+ errorDescription);
-		}
+		return auth;
+	}
 
-		String authCode = req.getParameter("code");
-		if (authCode == null || authCode.isEmpty()) {
-			throw new OrcidClientException(
-					"Authorization request did not return an authorization code.");
-		}
+	private AuthorizationStatus recordInvalidState(AuthorizationStatus auth) {
+		return auth.setFailure(AuthorizationStatus.ErrorCode.INVALID_STATE,
+				auth.getState(), State.SEEKING_AUTHORIZATION);
+	}
 
-		// TODO Set the authStatus as "SEEKING_ACCESS_TOKEN"
+	private boolean isError() {
+		return req.getParameter("error") != null;
+	}
 
+	private AuthorizationStatus recordError(AuthorizationStatus auth) {
+		return auth.setFailure(req.getParameter("error"),
+				req.getParameter("error_description"));
+	}
+
+	private boolean isCodePresent() {
+		String code = req.getParameter("code");
+		return (code != null) && (!code.isEmpty());
+	}
+
+	private AuthorizationStatus recordCode(AuthorizationStatus auth) {
+		return auth.setSeekingAccessToken(req.getParameter("code"));
+	}
+
+	private AuthorizationStatus recordNoCode(AuthorizationStatus auth) {
+		return auth.setFailure(AuthorizationStatus.ErrorCode.NO_AUTH_CODE);
+	}
+
+	private AuthorizationStatus getAccessTokenFromAuthCode(
+			AuthorizationStatus auth) throws AccessTokenFormatException,
+			OrcidClientException {
 		List<NameValuePair> form = Form.form()
 				.add("client_id", context.getSetting(CLIENT_ID))
 				.add("client_secret", context.getSetting(CLIENT_SECRET))
-				.add("grant_type", "authorization_code").add("code", authCode)
+				.add("grant_type", "authorization_code")
+				.add("code", auth.getAuthorizationCode())
 				.add("redirect_uri", context.getCallbackUrl()).build();
-
 		Request request = Request.Post(context.getAccessTokenRequestUrl())
 				.addHeader("Accept", "application/json").bodyForm(form);
 
 		try {
 			Response response = request.execute();
 			String string = response.returnContent().asString();
-			authStatus.setSuccess(new AccessToken(string));
-			return authStatus;
+			AccessToken accessToken = new AccessToken(string);
+			return auth.setSuccess(accessToken);
 		} catch (IOException e) {
-			throw new OrcidClientException("Request for access token failed.",
-					e);
+			return auth.setFailure("Request for access token failed.", e);
 		}
 	}
 

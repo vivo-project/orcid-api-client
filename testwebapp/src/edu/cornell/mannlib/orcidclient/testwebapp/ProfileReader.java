@@ -41,10 +41,10 @@ public class ProfileReader extends OrcidActor {
 	}
 	
 	@Override
-	protected void performAction(AuthorizationStatus authStatus) {
+	protected void performAction(AuthorizationStatus auth) {
 		try {
 			OrcidMessage message = new ReadProfileAction(occ)
-					.execute(authStatus.getAccessToken());
+					.execute(auth.getAccessToken());
 			String marshalled = occ.marshall(message);
 
 			out.println("<html><head></head><body>");

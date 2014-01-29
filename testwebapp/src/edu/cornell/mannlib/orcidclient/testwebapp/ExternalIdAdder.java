@@ -43,14 +43,14 @@ public class ExternalIdAdder extends OrcidActor {
 	}
 
 	@Override
-	protected void performAction(AuthorizationStatus authStatus) {
+	protected void performAction(AuthorizationStatus auth) {
 		String bogusUri = "http://bogus.uri.edu/" + System.currentTimeMillis();
 		ExternalId externalId = new ExternalId().setCommonName("VIVO Cornell")
 				.setReference(bogusUri).setUrl(bogusUri).setVisibility(PUBLIC);
-		
+
 		try {
 			OrcidMessage message = new AddExternalIdAction().execute(
-					externalId, authStatus.getAccessToken());
+					externalId, auth.getAccessToken());
 			String marshalled = occ.marshall(message);
 
 			out.println("<html><head></head><body>");

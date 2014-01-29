@@ -3,8 +3,6 @@
 package edu.cornell.mannlib.orcidclient.auth;
 
 import static edu.cornell.mannlib.orcidclient.actions.ApiAction.NO_ACTION;
-import static edu.cornell.mannlib.orcidclient.auth.AuthorizationStatus.State.NONE;
-import static edu.cornell.mannlib.orcidclient.auth.AuthorizationStatus.State.PENDING;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -44,37 +42,29 @@ public class AuthorizationCache {
 
 	Map<ApiAction, AuthorizationStatus> map = new EnumMap<>(ApiAction.class);
 
-	public AuthorizationStatus createStatus(ApiAction action,
-			String successUrl, String failureUrl) {
-		log.debug("createStatus: action=" + action + ", successUrl="
-				+ successUrl + ", failureUrl=" + failureUrl);
-		AuthorizationStatus authStatus = new AuthorizationStatus(action,
-				successUrl, failureUrl, PENDING);
-		map.put(action, authStatus);
-		return authStatus;
+	public AuthorizationStatus store(AuthorizationStatus auth) {
+		map.put(auth.getAction(), auth);
+		return auth;
 	}
 
 	public AuthorizationStatus getStatus(ApiAction action) {
 		AuthorizationStatus authStatus = map.get(action);
 		if (authStatus == null) {
-			authStatus = new AuthorizationStatus(action, "/", "/", NONE);
+			authStatus = AuthorizationStatus.empty(action);
 		}
-		log.debug("getStatus for action: " + action +
-				", status=" + authStatus);
+		log.debug("getStatus for action: " + action + ", status=" + authStatus);
 		return authStatus;
 	}
 
 	public AuthorizationStatus getStatus(String token) {
-		for (AuthorizationStatus as : map.values()) {
-			if (as.getId().equals(token)) {
-				log.debug("getStatus for token: " + token +
-						", status=" + as);
-				return as;
+		for (AuthorizationStatus auth : map.values()) {
+			if (auth.getId().equals(token)) {
+				log.debug("getStatus for token: " + token + ", status=" + auth);
+				return auth;
 			}
 		}
-		log.debug("getStatus for token: " + token +
-				", status=NONE");
-		return new AuthorizationStatus(NO_ACTION, "/", "/", NONE);
+		log.debug("getStatus for token: " + token + ", status=NONE");
+		return AuthorizationStatus.empty(NO_ACTION);
 	}
 
 	public void clearStatus(ApiAction action) {

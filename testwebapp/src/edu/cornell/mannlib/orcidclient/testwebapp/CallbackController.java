@@ -20,7 +20,6 @@ import org.apache.commons.logging.LogFactory;
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
 import edu.cornell.mannlib.orcidclient.auth.AuthorizationManager;
 import edu.cornell.mannlib.orcidclient.auth.AuthorizationStatus;
-import edu.cornell.mannlib.orcidclient.auth.AuthorizationStatus.State;
 import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
 
 /**
@@ -42,15 +41,15 @@ public class CallbackController extends HttpServlet {
 		if (log.isDebugEnabled()) {
 			log.debug("Request parameters: " + dumpParameterMap(req));
 		}
-		
+
 		AuthorizationManager authManager = occ.getAuthorizationManager(req);
 		try {
-			AuthorizationStatus authStatus = authManager
+			AuthorizationStatus auth = authManager
 					.processAuthorizationResponse();
-			if (authStatus.getState() == State.SUCCESS) {
-				resp.sendRedirect(authStatus.getSuccessUrl());
+			if (auth.isSuccess()) {
+				resp.sendRedirect(auth.getSuccessUrl());
 			} else {
-				resp.sendRedirect(authStatus.getFailureUrl());
+				resp.sendRedirect(auth.getFailureUrl());
 			}
 		} catch (OrcidClientException e) {
 			log.error("Invalid authorization response", e);
