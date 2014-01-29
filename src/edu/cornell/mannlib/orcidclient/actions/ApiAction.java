@@ -10,7 +10,9 @@ public enum ApiAction {
 
 	READ_PROFILE("/orcid-profile/read-limited"),
 
-	ADD_EXTERNAL_ID("/orcid-bio/external-identifiers/create");
+	ADD_EXTERNAL_ID("/orcid-bio/external-identifiers/create"),
+
+	UPDATE_BIO("/orcid-bio/update");
 
 	private final String scope;
 

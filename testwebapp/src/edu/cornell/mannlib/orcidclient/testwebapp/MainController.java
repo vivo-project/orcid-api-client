@@ -23,10 +23,9 @@ import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
  */
 public class MainController extends HttpServlet {
 	private static final Log log = LogFactory.getLog(MainController.class);
-	
-	
+
 	private OrcidClientContext occ;
-	
+
 	@Override
 	public void init() throws ServletException {
 		occ = OrcidClientContext.getInstance();
@@ -38,11 +37,15 @@ public class MainController extends HttpServlet {
 		if (log.isDebugEnabled()) {
 			log.debug("Request parameters: " + dumpParameterMap(req));
 		}
-		
-		if (req.getParameter("ReadProfile") != null) {
+
+		if (req.getParameter("ReadPublic") != null) {
+			new PublicBioReader(req, resp).exec();
+		} else if (req.getParameter("ReadProfile") != null) {
 			new ProfileReader(req, resp).exec();
 		} else if (req.getParameter("AddExternalId") != null) {
 			new ExternalIdAdder(req, resp).exec();
+		} else if (req.getParameter("RestrictExternalIds") != null) {
+			new ExternalIdRestrictor(req, resp).exec();
 		} else {
 			doBogusRequest(req, resp);
 		}
@@ -50,9 +53,9 @@ public class MainController extends HttpServlet {
 
 	private void doBogusRequest(HttpServletRequest req, HttpServletResponse resp) {
 		// TODO Auto-generated method stub
-		throw new RuntimeException("MainController.doBogusRequest() not implemented.");
+		throw new RuntimeException(
+				"MainController.doBogusRequest() not implemented.");
 	}
-
 
 	private String dumpParameterMap(HttpServletRequest req) {
 		@SuppressWarnings("unchecked")

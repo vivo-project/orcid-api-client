@@ -47,7 +47,7 @@ public abstract class OrcidActor {
 			showAuthorizationPending(auth);
 			authManager.clearStatus(action);
 		} else if (auth.isDenied()) {
-			showAuthorizationDeclined();
+			showAuthorizationDenied();
 			authManager.clearStatus(action);
 		} else if (auth.isFailure()) {
 			showAuthorizationFailure(auth);
@@ -70,9 +70,9 @@ public abstract class OrcidActor {
 		out.println("</body></html>");
 	}
 
-	protected void showAuthorizationDeclined() {
+	protected void showAuthorizationDenied() {
 		out.println("<html><head></head><body>");
-		out.println("<h1>Authorization Declined</h1>");
+		out.println("<h1>Authorization Denied for </h1>");
 		out.println("</body></html>");
 	}
 
