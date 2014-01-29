@@ -40,7 +40,7 @@ public class ReadPublicBioAction {
 
 	public OrcidMessage execute(String orcid) throws OrcidClientException {
 		try {
-			URI baseUri = new URI(occ.getSetting(Setting.API_BASE_URL));
+			URI baseUri = new URI(occ.getSetting(Setting.PUBLIC_API_BASE_URL));
 			String requestUrl = URIUtils.resolve(baseUri, orcid + "/orcid-bio")
 					.toString();
 			Request request = Request.Get(requestUrl).addHeader("Content-Type",

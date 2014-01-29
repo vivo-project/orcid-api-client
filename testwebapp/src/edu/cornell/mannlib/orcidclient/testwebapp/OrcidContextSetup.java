@@ -2,13 +2,14 @@
 
 package edu.cornell.mannlib.orcidclient.testwebapp;
 
-import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.API_BASE_URL;
+import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.AUTHORIZED_API_BASE_URL;
 import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.CALLBACK_PATH;
 import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.CLIENT_ID;
 import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.CLIENT_SECRET;
 import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.MESSAGE_VERSION;
 import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.OAUTH_AUTHORIZE_URL;
 import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.OAUTH_TOKEN_URL;
+import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.PUBLIC_API_BASE_URL;
 import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.WEBAPP_BASE_URL;
 
 import java.util.EnumMap;
@@ -34,7 +35,8 @@ public class OrcidContextSetup implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent sce) {
 		try {
 			Map<Setting, String> settings = new EnumMap<>(Setting.class);
-			settings.put(API_BASE_URL, "http://api.sandbox-1.orcid.org/v1.0.23");
+			settings.put(AUTHORIZED_API_BASE_URL, "http://api.sandbox-1.orcid.org/v1.0.23");
+			settings.put(PUBLIC_API_BASE_URL, "http://pub.sandbox-1.orcid.org/v1.0.23");
 			settings.put(OAUTH_AUTHORIZE_URL, "http://sandbox-1.orcid.org/oauth/authorize");
 			settings.put(OAUTH_TOKEN_URL, "http://api.sandbox-1.orcid.org/oauth/token");
 			settings.put(CLIENT_ID, "0000-0002-4639-029X");

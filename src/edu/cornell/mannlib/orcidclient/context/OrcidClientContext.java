@@ -22,7 +22,7 @@ public abstract class OrcidClientContext {
 	private static final Log log = LogFactory.getLog(OrcidClientContext.class);
 
 	public enum Setting {
-		CLIENT_ID, API_BASE_URL, MESSAGE_VERSION, CALLBACK_PATH, WEBAPP_BASE_URL, CLIENT_SECRET, OAUTH_TOKEN_URL, OAUTH_AUTHORIZE_URL
+		CLIENT_ID, AUTHORIZED_API_BASE_URL, PUBLIC_API_BASE_URL, MESSAGE_VERSION, CALLBACK_PATH, WEBAPP_BASE_URL, CLIENT_SECRET, OAUTH_TOKEN_URL, OAUTH_AUTHORIZE_URL
 	}
 
 	// ----------------------------------------------------------------------

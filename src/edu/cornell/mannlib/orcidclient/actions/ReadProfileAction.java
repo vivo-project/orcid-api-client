@@ -40,7 +40,7 @@ public class ReadProfileAction {
 	public OrcidMessage execute(AccessToken accessToken)
 			throws OrcidClientException {
 		try {
-			URI baseUri = new URI(occ.getSetting(Setting.API_BASE_URL));
+			URI baseUri = new URI(occ.getSetting(Setting.AUTHORIZED_API_BASE_URL));
 			String requestUrl = URIUtils.resolve(baseUri,
 					accessToken.getOrcid() + "/orcid-profile").toString();
 			Request request = Request

@@ -76,7 +76,7 @@ public class AddExternalIdAction {
 			throws OrcidClientException {
 
 		try {
-			URI baseUri = new URI(occ.getSetting(Setting.API_BASE_URL));
+			URI baseUri = new URI(occ.getSetting(Setting.AUTHORIZED_API_BASE_URL));
 			String requestUrl = URIUtils.resolve(baseUri,
 					accessToken.getOrcid() + "/orcid-bio/external-identifiers")
 					.toString();
