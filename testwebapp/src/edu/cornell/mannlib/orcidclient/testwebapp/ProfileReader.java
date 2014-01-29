@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
+import edu.cornell.mannlib.orcidclient.actions.ApiAction;
 import edu.cornell.mannlib.orcidclient.actions.ReadProfileAction;
 import edu.cornell.mannlib.orcidclient.auth.AuthorizationStatus;
 import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
@@ -24,7 +25,7 @@ public class ProfileReader extends OrcidActor {
 
 	public ProfileReader(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-		super(req, resp);
+		super(req, resp, ApiAction.READ_PROFILE);
 	}
 
 	@Override

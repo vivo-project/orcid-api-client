@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
 import edu.cornell.mannlib.orcidclient.actions.AddExternalIdAction;
+import edu.cornell.mannlib.orcidclient.actions.ApiAction;
 import edu.cornell.mannlib.orcidclient.auth.AuthorizationStatus;
 import edu.cornell.mannlib.orcidclient.beans.ExternalId;
 import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
@@ -26,7 +27,7 @@ public class ExternalIdAdder extends OrcidActor {
 
 	public ExternalIdAdder(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-		super(req, resp);
+		super(req, resp, ApiAction.ADD_EXTERNAL_ID);
 	}
 
 	@Override

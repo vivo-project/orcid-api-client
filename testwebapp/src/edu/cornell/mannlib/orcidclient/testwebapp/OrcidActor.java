@@ -2,8 +2,6 @@
 
 package edu.cornell.mannlib.orcidclient.testwebapp;
 
-import static edu.cornell.mannlib.orcidclient.actions.ApiAction.READ_PROFILE;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -11,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import edu.cornell.mannlib.orcidclient.actions.ActionManager;
+import edu.cornell.mannlib.orcidclient.actions.ApiAction;
 import edu.cornell.mannlib.orcidclient.auth.AuthorizationManager;
 import edu.cornell.mannlib.orcidclient.auth.AuthorizationStatus;
 import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
@@ -24,9 +23,10 @@ public abstract class OrcidActor {
 	protected final OrcidClientContext occ;
 	protected final AuthorizationManager authManager;
 	protected final ActionManager actionManager;
+	protected final ApiAction action;
 
-	protected OrcidActor(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
+	protected OrcidActor(HttpServletRequest req, HttpServletResponse resp,
+			ApiAction action) throws IOException {
 		this.resp = resp;
 		this.out = resp.getWriter();
 		resp.setContentType("text/html");
@@ -34,23 +34,24 @@ public abstract class OrcidActor {
 		this.occ = OrcidClientContext.getInstance();
 		this.authManager = occ.getAuthorizationManager(req);
 		this.actionManager = occ.getActionManager(req);
+
+		this.action = action;
 	}
 
 	public void exec() throws IOException {
-		AuthorizationStatus auth = authManager
-				.getAuthorizationStatus(READ_PROFILE);
+		AuthorizationStatus auth = authManager.getAuthorizationStatus(action);
 		if (auth.isSeekingAuthorization()) {
 			showAuthorizationPending(auth);
-			authManager.clearStatus(auth.getAction());
+			authManager.clearStatus(action);
 		} else if (auth.isSeekingAccessToken()) {
 			showAuthorizationPending(auth);
-			authManager.clearStatus(auth.getAction());
+			authManager.clearStatus(action);
 		} else if (auth.isDenied()) {
 			showAuthorizationDeclined();
-			authManager.clearStatus(auth.getAction());
+			authManager.clearStatus(action);
 		} else if (auth.isFailure()) {
 			showAuthorizationFailure(auth);
-			authManager.clearStatus(auth.getAction());
+			authManager.clearStatus(action);
 		} else if (auth.isSuccess()) {
 			performAction(auth);
 		} else { // NONE
