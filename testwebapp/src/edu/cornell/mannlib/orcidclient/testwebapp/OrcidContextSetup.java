@@ -2,19 +2,14 @@
 
 package edu.cornell.mannlib.orcidclient.testwebapp;
 
-import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.AUTHORIZED_API_BASE_URL;
-import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.CALLBACK_PATH;
-import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.CLIENT_ID;
-import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.CLIENT_SECRET;
-import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.MESSAGE_VERSION;
-import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.OAUTH_AUTHORIZE_URL;
-import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.OAUTH_TOKEN_URL;
-import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.PUBLIC_API_BASE_URL;
-import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.WEBAPP_BASE_URL;
-
-import java.util.EnumMap;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -31,23 +26,58 @@ import edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting;
 public class OrcidContextSetup implements ServletContextListener {
 	private static final Log log = LogFactory.getLog(OrcidContextSetup.class);
 
+	private static final String ORCID_SETTINGS_PROPERTY = "orcid.settings";
+	private static final String DEFAULT_SETTINGS_FILE = "settings.properties";
+
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		try {
-			Map<Setting, String> settings = new EnumMap<>(Setting.class);
-			settings.put(AUTHORIZED_API_BASE_URL, "http://api.sandbox-1.orcid.org/v1.1");
-			settings.put(PUBLIC_API_BASE_URL, "http://pub.sandbox-1.orcid.org/v1.1");
-			settings.put(OAUTH_AUTHORIZE_URL, "http://sandbox-1.orcid.org/oauth/authorize");
-			settings.put(OAUTH_TOKEN_URL, "http://api.sandbox-1.orcid.org/oauth/token");
-			settings.put(CLIENT_ID, "0000-0002-4639-029X");
-			settings.put(CLIENT_SECRET, "09df8b85-ec19-41ff-944a-9949baf9a6bb");
-			settings.put(MESSAGE_VERSION, "1.1");
-			settings.put(CALLBACK_PATH, "callback");
-			settings.put(WEBAPP_BASE_URL,
-					"http://jeb228-dev.library.cornell.edu/orcivo/");
+		String path = locatePropertiesFile(sce);
+		Properties properties = loadProperties(path);
+		Map<Setting, String> settings = convertToSettings(properties);
+		initializeOrcidContext(settings);
+	}
 
+	private String locatePropertiesFile(ServletContextEvent sce) {
+		ServletContext ctx = sce.getServletContext();
+		String filename = System.getProperty(ORCID_SETTINGS_PROPERTY,
+				DEFAULT_SETTINGS_FILE);
+		String path = ctx.getRealPath(filename);
+		if (path == null) {
+			log.error("Can't find the property settings file at '" + filename
+					+ "'");
+		}
+		return path;
+	}
+
+	private Properties loadProperties(String path) {
+		Properties settings = new Properties();
+		try {
+			settings.load(new FileReader(path));
+		} catch (IOException e) {
+			log.error("Failed to load the property settings file at '" + path
+					+ "'");
+		}
+		return settings;
+	}
+
+	private Map<Setting, String> convertToSettings(Properties settings) {
+		Map<Setting, String> settingsMap = new HashMap<>();
+		for (String name : settings.stringPropertyNames()) {
+			try {
+				Setting key = Setting.valueOf(name);
+				settingsMap.put(key, settings.getProperty(name));
+			} catch (Exception e) {
+				log.error("Invalid property key: ''. Valid keys are "
+						+ Arrays.asList(Setting.values()));
+			}
+		}
+		return settingsMap;
+	}
+
+	private void initializeOrcidContext(Map<Setting, String> settings) {
+		try {
 			OrcidClientContext.initialize(settings);
-			System.out.println("Context is: "+ OrcidClientContext.getInstance());
+			log.info("Context is: " + OrcidClientContext.getInstance());
 		} catch (OrcidClientException e) {
 			log.error("Failed to initialize OrcidClientContent", e);
 		}
