@@ -2,6 +2,7 @@
 
 package edu.cornell.mannlib.orcidclient.testwebapp;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -53,9 +54,11 @@ public class OrcidContextSetup implements ServletContextListener {
 		Properties settings = new Properties();
 		try {
 			settings.load(new FileReader(path));
+		} catch (FileNotFoundException e) {
+			log.error("No settings file at '" + path + "'", e);
 		} catch (IOException e) {
 			log.error("Failed to load the property settings file at '" + path
-					+ "'");
+					+ "'", e);
 		}
 		return settings;
 	}
