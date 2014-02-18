@@ -1,0 +1,191 @@
+Receive a request like this:
+
+http://sandbox-1.orcid.org/oauth/authorize ?
+	client_id=0000-0002-4639-029X & 
+	scope=%2Forcid-profile%2Fread-limited &
+	response_type=code & 
+	redirect_uri=http%3A%2F%2Fjeb228-dev.library.cornell.edu%2Forcivo%2Fcallback & 
+	state=1728933982
+	
+If not logged in, show the login screen.
+	
+Show the user auth screen. Either read-limited or add-external-identifier, depending on the scope. 
+
+If the user clicks "approve", then respond with a redirect like this:
+   http://jeb228-dev.library.cornell.edu/orcivo/callback?code=Feb8OP&state=1728933982
+   state and URL are from the request, but "code" is generated here.
+   
+If the user clicks "disapprove", then responsd with a redirect like this:
+    http://jeb228-dev.library.cornell.edu/orcivo/callback?error=access_denied&error_description=User+denied+access&state=372991735
+
+-------------------------------------------------------------------------------------------------------------------
+
+Receive a request like this:
+
+2014-02-17 13:01:13,401 DEBUG [wire] http-outgoing-1 >> "POST /oauth/token HTTP/1.1[\r][\n]"
+2014-02-17 13:01:13,401 DEBUG [wire] http-outgoing-1 >> "Accept: application/json[\r][\n]"
+2014-02-17 13:01:13,401 DEBUG [wire] http-outgoing-1 >> "Content-Length: 199[\r][\n]"
+2014-02-17 13:01:13,401 DEBUG [wire] http-outgoing-1 >> "Content-Type: application/x-www-form-urlencoded; charset=ISO-8859-1[\r][\n]"
+2014-02-17 13:01:13,401 DEBUG [wire] http-outgoing-1 >> "Host: api.sandbox-1.orcid.org[\r][\n]"
+2014-02-17 13:01:13,402 DEBUG [wire] http-outgoing-1 >> "Connection: Keep-Alive[\r][\n]"
+2014-02-17 13:01:13,402 DEBUG [wire] http-outgoing-1 >> "User-Agent: Apache-HttpClient/4.3.2 (java 1.5)[\r][\n]"
+2014-02-17 13:01:13,402 DEBUG [wire] http-outgoing-1 >> "Accept-Encoding: gzip,deflate[\r][\n]"
+2014-02-17 13:01:13,402 DEBUG [wire] http-outgoing-1 >> "[\r][\n]"
+2014-02-17 13:01:13,402 DEBUG [wire] http-outgoing-1 >> "client_id=0000-0002-4639-029X&client_secret=09df8b85-ec19-41ff-944a-9949baf9a6bb&grant_type=authorization_code&code=Feb8OP&redirect_uri=http%3A%2F%2Fjeb228-dev.library.cornell.edu%2Forcivo%2Fcallback"
+
+code is from the auth, and is for a specific scope
+Don't care about client-id, client-secret, grant_type, callback_uri
+
+Return:
+2014-02-17 13:01:13,572 DEBUG [wire] http-outgoing-1 << "HTTP/1.1 200 OK[\r][\n]"
+2014-02-17 13:01:13,572 DEBUG [wire] http-outgoing-1 << "Server: nginx/1.1.19[\r][\n]"
+2014-02-17 13:01:13,573 DEBUG [wire] http-outgoing-1 << "Date: Mon, 17 Feb 2014 18:01:13 GMT[\r][\n]"
+2014-02-17 13:01:13,573 DEBUG [wire] http-outgoing-1 << "Content-Type: application/json;charset=UTF-8[\r][\n]"
+2014-02-17 13:01:13,573 DEBUG [wire] http-outgoing-1 << "Transfer-Encoding: chunked[\r][\n]"
+2014-02-17 13:01:13,573 DEBUG [wire] http-outgoing-1 << "Connection: keep-alive[\r][\n]"
+2014-02-17 13:01:13,573 DEBUG [wire] http-outgoing-1 << "Vary: Accept-Encoding[\r][\n]"
+2014-02-17 13:01:13,573 DEBUG [wire] http-outgoing-1 << "Access-Control-Allow-Origin: *[\r][\n]"
+2014-02-17 13:01:13,573 DEBUG [wire] http-outgoing-1 << "Cache-Control: no-store[\r][\n]"
+2014-02-17 13:01:13,573 DEBUG [wire] http-outgoing-1 << "Pragma: no-cache[\r][\n]"
+2014-02-17 13:01:13,573 DEBUG [wire] http-outgoing-1 << "Content-Encoding: gzip[\r][\n]"
+2014-02-17 13:01:13,573 DEBUG [wire] http-outgoing-1 << "[\r][\n]"
+2014-02-17 13:01:13,573 DEBUG [wire] http-outgoing-1 << "b5[\r][\n]"
+2014-02-17 13:01:13,574 DEBUG [wire] http-outgoing-1 << "[0x1f][0x8b][0x8][0x0][0x0][0x0][0x0][0x0][0x0][0x3]=[0xcc]K[0xe][0x83]0[0xc][0x4][0xd0][0xbb]d[0x8d][0x5]NBpz[0x19][0x94]8F[0x8d][0xfa][0x1][0x5][0x16][0xad][0xaa][0xde][0xbd][0x16][0x8b]Z[0xf2][0xc6][0x9e]7[0x1f][0x93][0x98]e[0xdf][0xe7]c[0xbd][0xc9][0xd3]\[0xcc]D[0xa3][0x90]8[0xf][0xc3][0x12][0x2]x[0x8e][0x4][0x9][0x1d][0x1]S[0xcc]L[0x9c][0x1d]Q0[0x9d]9[0xe3][0xf3][0xf1][0xde]DM[0x96][0xd4][0xa4][0xe9][0xb5][0xc9][0xd2]d[0xbf][0xfe][0xcb]F[0xe1][0x92][0x10][0x11]rX"[0xf8]\<$[0x8b][0x5]pt1XI[0x99]ST&[0xaf][0xad][0xaa][0x9b][0xab][0x9a]`[0xc9][0xe][0x84][0x96]:[0xb3][0xf3]z[0xd6][0xf7]k[0xe3]Z`k[0xeb]R[0xef][0xd2]7I[0x5][0xee][0xf5]Q[0xf])[0x8a][0xcf][0xa7][0xa6][0x6][0x1d][0xd0]u[0xe0][0xfc][0x14]![0xc][0x88][0xe6][0xfb][0x3][0xd0][0xc4][0xb9][0xed][0xdf][0x0][0x0][0x0][\r][\n]"
+2014-02-17 13:01:13,574 DEBUG [wire] http-outgoing-1 << "0[\r][\n]"
+2014-02-17 13:01:13,574 DEBUG [wire] http-outgoing-1 << "[\r][\n]"
+Ditch the content-encoding, and it looks like this:
+2014-02-17 13:11:37,969 DEBUG [AuthorizationManager] Json response: '{"access_token":"785e8e34-0f66-4c98-a138-c89bc8cb3886","token_type":"bearer","refresh_token":"5ecda111-b6f9-4bd4-a21d-153962eabca9","expires_in":628207503,"scope":"/orcid-profile/read-limited","orcid":"0000-0003-3479-6011"}'
+We want the orcid, the most.
+
+
+
+-------------------------------------------------------------------------------------------------------------------
+
+Receive a request like this:
+
+2014-02-17 13:01:13,674 DEBUG [wire] http-outgoing-1 >> "GET /0000-0003-3479-6011/orcid-profile HTTP/1.1[\r][\n]"
+2014-02-17 13:01:13,674 DEBUG [wire] http-outgoing-1 >> "Content-Type: application/vdn.orcid+xml[\r][\n]"
+2014-02-17 13:01:13,674 DEBUG [wire] http-outgoing-1 >> "Authorization: bearer 785e8e34-0f66-4c98-a138-c89bc8cb3886[\r][\n]"
+2014-02-17 13:01:13,674 DEBUG [wire] http-outgoing-1 >> "Host: api.sandbox-1.orcid.org[\r][\n]"
+2014-02-17 13:01:13,674 DEBUG [wire] http-outgoing-1 >> "Connection: Keep-Alive[\r][\n]"
+2014-02-17 13:01:13,674 DEBUG [wire] http-outgoing-1 >> "User-Agent: Apache-HttpClient/4.3.2 (java 1.5)[\r][\n]"
+2014-02-17 13:01:13,674 DEBUG [wire] http-outgoing-1 >> "Accept-Encoding: gzip,deflate[\r][\n]"
+2014-02-17 13:01:13,675 DEBUG [wire] http-outgoing-1 >> "[\r][\n]"
+
+Authorization header is from returned access_token
+
+Respond:
+2014-02-17 13:01:14,092 DEBUG [wire] http-outgoing-1 << "HTTP/1.1 200 OK[\r][\n]"
+2014-02-17 13:01:14,093 DEBUG [wire] http-outgoing-1 << "Server: nginx/1.1.19[\r][\n]"
+2014-02-17 13:01:14,093 DEBUG [wire] http-outgoing-1 << "Date: Mon, 17 Feb 2014 18:01:14 GMT[\r][\n]"
+2014-02-17 13:01:14,093 DEBUG [wire] http-outgoing-1 << "Content-Type: application/vnd.orcid+xml; qs=5;charset=UTF-8[\r][\n]"
+2014-02-17 13:01:14,093 DEBUG [wire] http-outgoing-1 << "Transfer-Encoding: chunked[\r][\n]"
+2014-02-17 13:01:14,093 DEBUG [wire] http-outgoing-1 << "Connection: keep-alive[\r][\n]"
+2014-02-17 13:01:14,093 DEBUG [wire] http-outgoing-1 << "Access-Control-Allow-Origin: *[\r][\n]"
+2014-02-17 13:01:14,093 DEBUG [wire] http-outgoing-1 << "[\r][\n]"
+2014-02-17 13:01:14,093 DEBUG [wire] http-outgoing-1 << "8fb[\r][\n]"
+2014-02-17 13:01:14,093 DEBUG [wire] http-outgoing-1 << "<?xml version="1.0" encoding="UTF-8" standalone="yes"?>[\n]"
+2014-02-17 13:01:14,093 DEBUG [wire] http-outgoing-1 << "<orcid-message xmlns="http://www.orcid.org/ns/orcid">[\n]"
+2014-02-17 13:01:14,093 DEBUG [wire] http-outgoing-1 << "    <message-version>1.0.23</message-version>[\n]"
+2014-02-17 13:01:14,093 DEBUG [wire] http-outgoing-1 << "    <orcid-profile type="user">[\n]"
+2014-02-17 13:01:14,094 DEBUG [wire] http-outgoing-1 << "        <orcid>0000-0003-3479-6011</orcid>[\n]"
+2014-02-17 13:01:14,094 DEBUG [wire] http-outgoing-1 << "        <orcid-id>http://sandbox-1.orcid.org/0000-0003-3479-6011</orcid-id>[\n]"
+2014-02-17 13:01:14,094 DEBUG [wire] http-outgoing-1 << "        <orcid-preferences>[\n]"
+2014-02-17 13:01:14,094 DEBUG [wire] http-outgoing-1 << "            <locale>en</locale>[\n]"
+2014-02-17 13:01:14,094 DEBUG [wire] http-outgoing-1 << "        </orcid-preferences>[\n]"
+2014-02-17 13:01:14,094 DEBUG [wire] http-outgoing-1 << "        <orcid-history>[\n]"
+2014-02-17 13:01:14,094 DEBUG [wire] http-outgoing-1 << "            <creation-method>website</creation-method>[\n]"
+2014-02-17 13:01:14,094 DEBUG [wire] http-outgoing-1 << "            <submission-date>2014-01-06T18:14:32.859Z</submission-date>[\n]"
+2014-02-17 13:01:14,094 DEBUG [wire] http-outgoing-1 << "            <last-modified-date>2014-02-17T18:01:13.520Z</last-modified-date>[\n]"
+2014-02-17 13:01:14,094 DEBUG [wire] http-outgoing-1 << "            <claimed>true</claimed>[\n]"
+2014-02-17 13:01:14,094 DEBUG [wire] http-outgoing-1 << "        </orcid-history>[\n]"
+2014-02-17 13:01:14,094 DEBUG [wire] http-outgoing-1 << "        <orcid-bio>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "            <personal-details>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "                <given-names>Sandbox-client</given-names>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "                <family-name>Blake</family-name>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "                <other-names visibility="public"/>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "            </personal-details>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "            <biography visibility="public">A singer, a dancer, a middle-tier Java jockey</biography>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "            <researcher-urls visibility="public"/>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "            <contact-details>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "                <address>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "                    <country visibility="limited">US</country>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "                </address>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "            </contact-details>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "            <external-identifiers visibility="limited">[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "                <external-identifier>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "                    <external-id-orcid>0000-0002-4639-029X</external-id-orcid>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "                    <external-id-common-name>VIVO Cornell</external-id-common-name>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "                    <external-id-reference>http://bogus.uri.edu/1390580728598</external-id-reference>[\n]"
+2014-02-17 13:01:14,095 DEBUG [wire] http-outgoing-1 << "                    <external-id-url>http://bogus.uri.edu/1390580728598</external-id-url>[\n]"
+2014-02-17 13:01:14,096 DEBUG [wire] http-outgoing-1 << "                </external-identifier>[\n]"
+2014-02-17 13:01:14,096 DEBUG [wire] http-outgoing-1 << "                <external-identifier>[\n]"
+2014-02-17 13:01:14,096 DEBUG [wire] http-outgoing-1 << "                    <external-id-orcid>0000-0002-4639-029X</external-id-orcid>[\n]"
+2014-02-17 13:01:14,096 DEBUG [wire] http-outgoing-1 << "                    <external-id-common-name>VIVO Cornell</external-id-common-name>[\n]"
+2014-02-17 13:01:14,096 DEBUG [wire] http-outgoing-1 << "                    <external-id-reference>http://bogus.uri.edu/1391027041070</external-id-reference>[\n]"
+2014-02-17 13:01:14,096 DEBUG [wire] http-outgoing-1 << "                    <external-id-url>http://bogus.uri.edu/1391027041070</external-id-url>[\n]"
+2014-02-17 13:01:14,096 DEBUG [wire] http-outgoing-1 << "                </external-identifier>[\n]"
+2014-02-17 13:01:14,096 DEBUG [wire] http-outgoing-1 << "            </external-identifiers>[\n]"
+2014-02-17 13:01:14,096 DEBUG [wire] http-outgoing-1 << "        </orcid-bio>[\n]"
+2014-02-17 13:01:14,096 DEBUG [wire] http-outgoing-1 << "        <orcid-activities/>[\n]"
+2014-02-17 13:01:14,096 DEBUG [wire] http-outgoing-1 << "    </orcid-profile>[\n]"
+2014-02-17 13:01:14,096 DEBUG [wire] http-outgoing-1 << "</orcid-message>[\n]"
+2014-02-17 13:01:14,096 DEBUG [wire] http-outgoing-1 << "[\r][\n]"
+2014-02-17 13:01:14,096 DEBUG [wire] http-outgoing-1 << "0[\r][\n]"
+2014-02-17 13:01:14,096 DEBUG [wire] http-outgoing-1 << "[\r][\n]"
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------
+
+Receive a request like this:
+
+2014-02-17 12:52:53,018 DEBUG [wire] http-outgoing-0 >> "GET /0000-0003-3479-6011/orcid-bio HTTP/1.1[\r][\n]"
+2014-02-17 12:52:53,019 DEBUG [wire] http-outgoing-0 >> "Content-Type: application/orcid+xml[\r][\n]"
+2014-02-17 12:52:53,019 DEBUG [wire] http-outgoing-0 >> "Host: pub.sandbox-1.orcid.org[\r][\n]"
+2014-02-17 12:52:53,019 DEBUG [wire] http-outgoing-0 >> "Connection: Keep-Alive[\r][\n]"
+2014-02-17 12:52:53,019 DEBUG [wire] http-outgoing-0 >> "User-Agent: Apache-HttpClient/4.3.2 (java 1.5)[\r][\n]"
+2014-02-17 12:52:53,019 DEBUG [wire] http-outgoing-0 >> "Accept-Encoding: gzip,deflate[\r][\n]"
+2014-02-17 12:52:53,019 DEBUG [wire] http-outgoing-0 >> "[\r][\n]"
+
+The Orcid is in the URL
+
+Response:
+2014-02-17 12:52:53,409 DEBUG [wire] http-outgoing-0 << "HTTP/1.1 200 OK[\r][\n]"
+2014-02-17 12:52:53,409 DEBUG [wire] http-outgoing-0 << "Server: nginx/1.1.19[\r][\n]"
+2014-02-17 12:52:53,409 DEBUG [wire] http-outgoing-0 << "Date: Mon, 17 Feb 2014 17:52:53 GMT[\r][\n]"
+2014-02-17 12:52:53,409 DEBUG [wire] http-outgoing-0 << "Content-Type: application/vnd.orcid+xml; qs=5[\r][\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "Transfer-Encoding: chunked[\r][\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "Connection: keep-alive[\r][\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "Access-Control-Allow-Origin: *[\r][\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "[\r][\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "414[\r][\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "<?xml version="1.0" encoding="UTF-8" standalone="yes"?>[\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "<orcid-message xmlns="http://www.orcid.org/ns/orcid">[\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "    <message-version>1.0.23</message-version>[\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "    <orcid-profile type="user">[\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "        <orcid>0000-0003-3479-6011</orcid>[\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "        <orcid-id>http://sandbox-1.orcid.org/0000-0003-3479-6011</orcid-id>[\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "        <orcid-preferences>[\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "            <locale>en</locale>[\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "        </orcid-preferences>[\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "        <orcid-history>[\n]"
+2014-02-17 12:52:53,410 DEBUG [wire] http-outgoing-0 << "            <creation-method>website</creation-method>[\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "            <submission-date>2014-01-06T18:14:32.859Z</submission-date>[\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "            <last-modified-date>2014-01-29T22:21:04.672Z</last-modified-date>[\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "            <claimed>true</claimed>[\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "        </orcid-history>[\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "        <orcid-bio>[\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "            <personal-details>[\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "                <given-names>Sandbox-client</given-names>[\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "                <family-name>Blake</family-name>[\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "            </personal-details>[\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "            <biography>A singer, a dancer, a middle-tier Java jockey</biography>[\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "        </orcid-bio>[\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "        <orcid-activities/>[\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "    </orcid-profile>[\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "</orcid-message>[\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "[\r][\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "0[\r][\n]"
+2014-02-17 12:52:53,411 DEBUG [wire] http-outgoing-0 << "[\r][\n]"

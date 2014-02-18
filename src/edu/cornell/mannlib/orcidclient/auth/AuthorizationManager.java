@@ -166,6 +166,7 @@ public class AuthorizationManager {
 		try {
 			Response response = request.execute();
 			String string = response.returnContent().asString();
+			log.debug("Json response: '" + string + "'");
 			AccessToken accessToken = new AccessToken(string);
 			return auth.setSuccess(accessToken);
 		} catch (IOException e) {
