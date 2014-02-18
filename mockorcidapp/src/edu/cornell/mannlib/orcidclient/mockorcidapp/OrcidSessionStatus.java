@@ -37,11 +37,7 @@ public class OrcidSessionStatus {
 
 	private String orcid;
 	private Map<ScopePathType, ScopeStatus> map;
-
-	
-	// ----------------------------------------------------------------------
-	// Helper class
-	// ----------------------------------------------------------------------
+	private ScopeStatus pendingAuthorization;
 
 	public boolean isLoggedIn() {
 		return orcid != null;
@@ -51,17 +47,63 @@ public class OrcidSessionStatus {
 		return orcid;
 	}
 
-
 	public void setOrcid(String orcid) {
 		this.orcid = orcid;
 	}
 
+	public ScopeStatus getPendingAuthorization() {
+		return pendingAuthorization;
+	}
 
-	private static class ScopeStatus {
-		private String redirectUri;
-		private ScopePathType scope;
-		private String state;
+	public void setPendingAuthorization(String redirectUri,
+			ScopePathType scope, String state) {
+		this.pendingAuthorization = new ScopeStatus(redirectUri, scope, state);
+	}
+
+	// ----------------------------------------------------------------------
+	// Helper class
+	// ----------------------------------------------------------------------
+
+	public static class ScopeStatus {
+		private final String redirectUri;
+		private final ScopePathType scope;
+		private final String state;
 		private String authCode;
 		private AccessToken accessToken;
+
+		public ScopeStatus(String redirectUri, ScopePathType scope, String state) {
+			this.redirectUri = redirectUri;
+			this.scope = scope;
+			this.state = state;
+		}
+
+		public String getAuthCode() {
+			return authCode;
+		}
+
+		public void setAuthCode(String authCode) {
+			this.authCode = authCode;
+		}
+
+		public AccessToken getAccessToken() {
+			return accessToken;
+		}
+
+		public void setAccessToken(AccessToken accessToken) {
+			this.accessToken = accessToken;
+		}
+
+		public String getRedirectUri() {
+			return redirectUri;
+		}
+
+		public ScopePathType getScope() {
+			return scope;
+		}
+
+		public String getState() {
+			return state;
+		}
+
 	}
 }

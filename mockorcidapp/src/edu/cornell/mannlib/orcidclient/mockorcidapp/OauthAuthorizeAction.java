@@ -3,16 +3,12 @@
 package edu.cornell.mannlib.orcidclient.mockorcidapp;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -32,27 +28,24 @@ import edu.cornell.mannlib.orcidclient.orcidmessage.ScopePathType;
  * 	      state=1728933982
  *    If not logged in, show the login screen, with the parameters in hidden fields
  *        Else, redirect to /login with the orcid and parameters
- * 
- * 
  * </pre>
+ * 
+ * TODO What do we do if they are already authorized for a scope? It appears
+ * that we go through it again.
  */
 public class OauthAuthorizeAction {
 	private static final Log log = LogFactory
 			.getLog(OauthAuthorizeAction.class);
 
-	private static final Pattern LOGIN_LINK_PATTERN = Pattern
-			.compile("{{loginLink.*}}");
-
 	private final HttpServletRequest req;
 	private final HttpSession session;
-	private final ServletContext ctx;
 	private final HttpServletResponse resp;
+	private final OrcidSessionStatus oss;
 
-	private String clientId;
 	private String redirectUri;
 	private String state;
 	private ScopePathType scope;
-	private OrcidSessionStatus oss;
+
 
 	/**
 	 * Match something like http://sandbox-1.orcid.org/oauth/authorize
@@ -66,22 +59,22 @@ public class OauthAuthorizeAction {
 	public OauthAuthorizeAction(HttpServletRequest req, HttpServletResponse resp) {
 		this.req = req;
 		this.session = req.getSession();
-		this.ctx = this.session.getServletContext();
 		this.resp = resp;
+		this.oss = OrcidSessionStatus.fetch(this.session);
 	}
 
 	public void doGet() throws IOException {
 		obtainAndValidateParameters();
-		getOrcidStatus();
+		setPendingAuthorization();
+
 		if (oss.isLoggedIn()) {
-			forwardToLoggedIn();
+			redirectToLoggedIn();
 		} else {
-			showLoginPage();
+			redirectToLoggingIn();
 		}
 	}
 
 	private void obtainAndValidateParameters() {
-		clientId = getRequiredParameter("client_id");
 		redirectUri = getRequiredParameter("redirect_uri");
 		state = getRequiredParameter("state");
 		scope = convertToScope(getRequiredParameter("scope"));
@@ -100,53 +93,19 @@ public class OauthAuthorizeAction {
 		return ScopePathType.fromValue(scopeString);
 	}
 
-	private void getOrcidStatus() {
-		oss = OrcidSessionStatus.fetch(session);
+	private void setPendingAuthorization() {
+		oss.setPendingAuthorization(redirectUri, scope, state);
 	}
 
-	private void forwardToLoggedIn() throws IOException {
+	private void redirectToLoggedIn() throws IOException {
 		String loggedInUrl = req.getContextPath() + "/login?orcid="
 				+ oss.getOrcid();
 		resp.sendRedirect(loggedInUrl);
 	}
-
-	private void showLoginPage() throws IOException {
-		resp.setContentType("text/html");
-		resp.getWriter().println(insertLinks(getTemplate()));
-	}
-
-	private String getTemplate() throws IOException {
-		return IOUtils.toString(ctx.getResourceAsStream("/login.template"));
-	}
-
-	private String insertLinks(String htmlTemplate) {
-		String linkTemplate = findLinkTemplate(htmlTemplate);
-		String links = assembleLinksHtml(linkTemplate);
-		String html = putLinksIntoTemplate(htmlTemplate, links);
-		
-		log.debug("html with links: \n" + html);
-		return html;
-	}
-
-	private String findLinkTemplate(String htmlTemplate) {
-		Matcher matcher = LOGIN_LINK_PATTERN.matcher(htmlTemplate);
-		if (!matcher.find()) {
-			throw new IllegalStateException("Didn't find the "
-					+ "login link pattern in the login.html template.");
-		}
-		return matcher.group();
-	}
-
-	private String assembleLinksHtml(String linkTemplate) {
-		StringBuilder links = new StringBuilder();
-		for (String orcid : OrcidProfiles.getOrcids()) {
-			links.append(linkTemplate.replace("_ORCID_", orcid));
-		}
-		return links.toString();
-	}
-
-	private String putLinksIntoTemplate(String htmlTemplate, String links) {
-		return LOGIN_LINK_PATTERN.matcher(htmlTemplate).replaceFirst(links);
+	
+	private void redirectToLoggingIn() throws IOException {
+		String loggingInUrl = req.getContextPath() + "/login";
+		resp.sendRedirect(loggingInUrl);
 	}
 
 }

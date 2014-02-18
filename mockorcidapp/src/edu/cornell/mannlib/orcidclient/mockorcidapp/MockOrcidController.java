@@ -21,7 +21,6 @@ import edu.cornell.mannlib.orcidclient.OrcidClientException;
 public class MockOrcidController extends HttpServlet {
 	private static final Log log = LogFactory.getLog(MockOrcidController.class);
 
-	private static final Pattern PATTERN_OAUTH_AUTHORIZE = null;
 	private static final Pattern PATTERN_AUTH_RESPONSE = null;
 	private static final Pattern PATTERN_OAUTH_TOKEN = null;
 
@@ -37,6 +36,9 @@ public class MockOrcidController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		log.debug("Request URL is '" + req.getRequestURL() + "'");
+		log.debug("Context path is '" + req.getContextPath() + "'");
+		log.debug("Path info is '" + req.getPathInfo() + "'");
 		try {
 			String pathInfo = req.getPathInfo();
 			if (PublicBioAction.matches(pathInfo)) {
@@ -45,6 +47,8 @@ public class MockOrcidController extends HttpServlet {
 				new GetProfileAction(req, resp).doGet();
 			} else if (OauthAuthorizeAction.matches(pathInfo)) {
 				new OauthAuthorizeAction(req, resp).doGet();
+			} else if (LoginAction.matches(pathInfo)) {
+				new LoginAction(req, resp).doGet();
 			} else if (PATTERN_AUTH_RESPONSE.matcher(pathInfo).matches()) {
 				new AuthResponseAction(req, resp).doGet();
 			} else {
