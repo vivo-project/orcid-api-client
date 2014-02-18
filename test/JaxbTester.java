@@ -46,7 +46,7 @@ public class JaxbTester {
 		try {
 			OrcidMessage om = OrcidClientContext.getInstance().unmarshall(xml);
 			System.out.println("Message is: " + om);
-			System.out.println("Orcid ID = "+ om.getOrcidProfile().getOrcid().getValue());
+			System.out.println("Orcid ID = "+ om.getOrcidProfile().getOrcidIdentifier().getContent());
 		} catch (OrcidClientException e) {
 			e.getCause().printStackTrace();
 		}

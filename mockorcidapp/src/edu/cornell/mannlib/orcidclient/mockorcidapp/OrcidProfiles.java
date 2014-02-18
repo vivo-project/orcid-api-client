@@ -2,32 +2,53 @@
 
 package edu.cornell.mannlib.orcidclient.mockorcidapp;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.cornell.mannlib.orcidclient.OrcidClientException;
 import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
 
 /**
- * TODO
+ * Keep the ORCID profiles in memory.
  * 
- * On init, read the profiles into OrcidMessage objects using the JAXB classes.
- * Map them by their ORCID IDs
+ * At startup, load the profiles from WEB-INF/resources. Any changes that happen
+ * while running will not be saved.
  */
 public class OrcidProfiles {
 	private static final Log log = LogFactory.getLog(OrcidProfiles.class);
 
 	private static final Map<String, OrcidMessage> map = new HashMap<>();
 
-	/**
-	 * @param servletContext
-	 */
-	public static void load(ServletContext servletContext) {
-		log.error("BOGUS OrcidProfiles.load()");
+	public static void load(ServletContext ctx) throws OrcidClientException,
+			IOException {
+		@SuppressWarnings("unchecked")
+		Set<String> paths = ctx.getResourcePaths("/WEB-INF/resources/");
+
+		for (String path : paths) {
+			String orcid = path.split("\\,")[0];
+			InputStream in = ctx.getResourceAsStream(path);
+			String xml = IOUtils.toString(in);
+			OrcidMessage profile = OrcidMessageUtils.unmarshall(xml);
+			map.put(orcid, profile);
+			log.info("Loaded ORCID profile for " + orcid);
+		}
+	}
+
+	public static boolean hasProfile(String orcid) {
+		return map.containsKey(orcid);
+	}
+
+	public static OrcidMessage getProfile(String orcid) {
+		return map.get(orcid);
 	}
 
 }

@@ -46,7 +46,6 @@ public class BadRequestAction {
 		resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		PrintWriter out = resp.getWriter();
 		out.println("<html><head></head><body>");
-		out.println("<h1>Path info was '" + req.getPathInfo() + "'</h1>");
 		out.println("<h1>Servlet threw an exception:</h1>");
 		out.println("<pre>");
 		e.printStackTrace(out);
@@ -55,6 +54,7 @@ public class BadRequestAction {
 
 		log.error("Servlet threw an exception" + e);
 		log.error("Path info was '" + req.getPathInfo() + "'");
+		log.error("Servlet path was '" + req.getServletPath() + "'");
 	}
 
 }

@@ -13,13 +13,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.cornell.mannlib.orcidclient.OrcidClientException;
+
 /**
  * TODO
  */
 public class MockOrcidController extends HttpServlet {
 	private static final Log log = LogFactory.getLog(MockOrcidController.class);
-	
-	private static final Pattern PATTERN_PUBLIC_BIO = null;
+
 	private static final Pattern PATTERN_GET_PROFILE = null;
 	private static final Pattern PATTERN_OAUTH_AUTHORIZE = null;
 	private static final Pattern PATTERN_AUTH_RESPONSE = null;
@@ -27,7 +28,11 @@ public class MockOrcidController extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
-		OrcidProfiles.load(getServletContext());
+		try {
+			OrcidProfiles.load(getServletContext());
+		} catch (OrcidClientException | IOException e) {
+			throw new ServletException("Failed to load the Orcid Profiles.", e);
+		}
 	}
 
 	@Override
@@ -35,7 +40,7 @@ public class MockOrcidController extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			String pathInfo = req.getPathInfo();
-			if (PATTERN_PUBLIC_BIO.matcher(pathInfo).matches()) {
+			if (PublicBioAction.matches(pathInfo)) {
 				new PublicBioAction(req, resp).doGet();
 			} else if (PATTERN_GET_PROFILE.matcher(pathInfo).matches()) {
 				new GetProfileAction(req, resp).doGet();
@@ -72,15 +77,7 @@ public class MockOrcidController extends HttpServlet {
  * TODO
  * 
  * <pre>
- *     
- * On doGet, parse the URL:
- *    GET /0000-0003-3479-6011/orcid-bio
- *    curl -H "Accept: application/orcid+xml" 
- *      'http://pub.sandbox-1.orcid.org/v1.1/0000-0001-7857-2795/orcid-bio' 
- *      -L -i
- *    if we have a bio for the ORCID, return it
- *        don't show any visibility="limited", OK?
- *    else 404
+ * 
  * 
  *    GET /0000-0003-3479-6011/orcid-profile 
  *    Content-Type: application/vdn.orcid+xml
