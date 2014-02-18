@@ -10,10 +10,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * TODO
  */
 public class MockOrcidController extends HttpServlet {
+	private static final Log log = LogFactory.getLog(MockOrcidController.class);
+	
 	private static final Pattern PATTERN_PUBLIC_BIO = null;
 	private static final Pattern PATTERN_GET_PROFILE = null;
 	private static final Pattern PATTERN_OAUTH_AUTHORIZE = null;
@@ -22,9 +27,7 @@ public class MockOrcidController extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
-		// TODO Auto-generated method stub
-		throw new RuntimeException(
-				"MockOrcidController.init() not implemented.");
+		OrcidProfiles.load(getServletContext());
 	}
 
 	@Override
@@ -69,8 +72,6 @@ public class MockOrcidController extends HttpServlet {
  * TODO
  * 
  * <pre>
- * On init, read the profiles into OrcidMessage objects using the JAXB classes. 
- *     Map them by their ORCID IDs
  *     
  * On doGet, parse the URL:
  *    GET /0000-0003-3479-6011/orcid-bio
