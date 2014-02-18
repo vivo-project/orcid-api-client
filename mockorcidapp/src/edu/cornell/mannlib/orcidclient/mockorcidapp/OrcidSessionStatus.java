@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import edu.cornell.mannlib.orcidclient.auth.AccessToken;
 import edu.cornell.mannlib.orcidclient.orcidmessage.ScopePathType;
 
 /**
@@ -42,6 +43,6 @@ public class OrcidSessionStatus {
 		private ScopePathType scope;
 		private String state;
 		private String authCode;
-		private String accessToken;
+		private AccessToken accessToken;
 	}
 }

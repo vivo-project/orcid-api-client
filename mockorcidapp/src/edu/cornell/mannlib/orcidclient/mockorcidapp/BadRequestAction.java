@@ -52,7 +52,7 @@ public class BadRequestAction {
 		out.println("</pre>");
 		out.println("</body></html>");
 
-		log.error("Servlet threw an exception" + e);
+		log.error("Servlet threw an exception", e);
 		log.error("Path info was '" + req.getPathInfo() + "'");
 		log.error("Servlet path was '" + req.getServletPath() + "'");
 	}

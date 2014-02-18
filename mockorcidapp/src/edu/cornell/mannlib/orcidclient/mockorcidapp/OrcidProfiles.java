@@ -34,7 +34,7 @@ public class OrcidProfiles {
 		Set<String> paths = ctx.getResourcePaths("/WEB-INF/resources/");
 
 		for (String path : paths) {
-			String orcid = path.split("\\,")[0];
+			String orcid = path.split("[./]")[3];
 			InputStream in = ctx.getResourceAsStream(path);
 			String xml = IOUtils.toString(in);
 			OrcidMessage profile = OrcidMessageUtils.unmarshall(xml);

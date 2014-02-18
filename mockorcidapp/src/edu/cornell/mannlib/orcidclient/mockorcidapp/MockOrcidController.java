@@ -21,7 +21,6 @@ import edu.cornell.mannlib.orcidclient.OrcidClientException;
 public class MockOrcidController extends HttpServlet {
 	private static final Log log = LogFactory.getLog(MockOrcidController.class);
 
-	private static final Pattern PATTERN_GET_PROFILE = null;
 	private static final Pattern PATTERN_OAUTH_AUTHORIZE = null;
 	private static final Pattern PATTERN_AUTH_RESPONSE = null;
 	private static final Pattern PATTERN_OAUTH_TOKEN = null;
@@ -42,7 +41,7 @@ public class MockOrcidController extends HttpServlet {
 			String pathInfo = req.getPathInfo();
 			if (PublicBioAction.matches(pathInfo)) {
 				new PublicBioAction(req, resp).doGet();
-			} else if (PATTERN_GET_PROFILE.matcher(pathInfo).matches()) {
+			} else if (GetProfileAction.matches(pathInfo)) {
 				new GetProfileAction(req, resp).doGet();
 			} else if (PATTERN_OAUTH_AUTHORIZE.matcher(pathInfo).matches()) {
 				new OauthAuthorizeAction(req, resp).doGet();
@@ -78,12 +77,6 @@ public class MockOrcidController extends HttpServlet {
  * 
  * <pre>
  * 
- * 
- *    GET /0000-0003-3479-6011/orcid-profile 
- *    Content-Type: application/vdn.orcid+xml
- *    Authorization: bearer 785e8e34-0f66-4c98-a138-c89bc8cb3886
- *    Same. Don't care what the auth code is.
- *    
  *    -------------------
  *    
  *    GET http://sandbox-1.orcid.org/oauth/authorize ?

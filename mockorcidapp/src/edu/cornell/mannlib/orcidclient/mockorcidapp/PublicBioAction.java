@@ -17,18 +17,12 @@ import edu.cornell.mannlib.orcidclient.OrcidClientException;
 import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
 
 /**
- * TODO
+ * Handle a request for the public biography.
  * 
- * <pre>
- *  On doGet, parse the URL:
- *    GET /0000-0003-3479-6011/orcid-bio
- *    curl -H "Accept: application/orcid+xml" 
- *      'http://pub.sandbox-1.orcid.org/v1.1/0000-0001-7857-2795/orcid-bio' 
- *      -L -i
- *    if we have a bio for the ORCID, return it
- *        don't show any visibility="limited", OK?
- *    else 404
- * </pre>
+ * If we have the profile they are asking for, return it as XML. Otherwise, send
+ * a 404 Not Found.
+ * 
+ * TODO - It would be nice if we removed any visibility="limited" sections.
  */
 public class PublicBioAction {
 	private static final Log log = LogFactory.getLog(PublicBioAction.class);
@@ -36,10 +30,11 @@ public class PublicBioAction {
 	private final HttpServletRequest req;
 	private final HttpServletResponse resp;
 
+	/**
+	 * Match something of the form /0000-0003-3479-6011/orcid-bio
+	 */
 	public static boolean matches(String pathInfo) {
-		String[] parts = pathInfo.split("/");
-		log.debug("parts is " + Arrays.toString(parts));
-		return (parts.length == 2) && ("orcid-bio".equals(parts[1]));
+		return extractOrcid(pathInfo) != null;
 	}
 
 	public PublicBioAction(HttpServletRequest req, HttpServletResponse resp) {
@@ -48,8 +43,7 @@ public class PublicBioAction {
 	}
 
 	public void doGet() throws IOException, OrcidClientException {
-		String[] parts = req.getPathInfo().split("/");
-		String orcid = parts[0];
+		String orcid = extractOrcid(req.getPathInfo());
 		log.debug("Request for public bio of " + orcid);
 
 		if (OrcidProfiles.hasProfile(orcid)) {
@@ -68,7 +62,17 @@ public class PublicBioAction {
 	}
 
 	private void showNoProfile(String orcid) throws IOException {
+		log.debug("No profile for " + orcid);
 		resp.sendError(SC_NOT_FOUND);
 	}
 
+	private static String extractOrcid(String pathInfo) {
+		String[] parts = pathInfo.split("/");
+		log.debug("parts is " + Arrays.toString(parts));
+		if ((parts.length == 3) && ("orcid-bio".equals(parts[2]))) {
+			return parts[1];
+		} else {
+			return null;
+		}
+	}
 }
