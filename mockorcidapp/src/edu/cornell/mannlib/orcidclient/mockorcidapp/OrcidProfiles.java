@@ -4,6 +4,8 @@ package edu.cornell.mannlib.orcidclient.mockorcidapp;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +51,10 @@ public class OrcidProfiles {
 
 	public static OrcidMessage getProfile(String orcid) {
 		return map.get(orcid);
+	}
+
+	public static Collection<String> getOrcids() {
+		return new ArrayList<>(map.keySet());
 	}
 
 }

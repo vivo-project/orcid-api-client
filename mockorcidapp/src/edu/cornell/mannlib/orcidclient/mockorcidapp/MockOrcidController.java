@@ -43,7 +43,7 @@ public class MockOrcidController extends HttpServlet {
 				new PublicBioAction(req, resp).doGet();
 			} else if (GetProfileAction.matches(pathInfo)) {
 				new GetProfileAction(req, resp).doGet();
-			} else if (PATTERN_OAUTH_AUTHORIZE.matcher(pathInfo).matches()) {
+			} else if (OauthAuthorizeAction.matches(pathInfo)) {
 				new OauthAuthorizeAction(req, resp).doGet();
 			} else if (PATTERN_AUTH_RESPONSE.matcher(pathInfo).matches()) {
 				new AuthResponseAction(req, resp).doGet();
@@ -76,18 +76,6 @@ public class MockOrcidController extends HttpServlet {
  * TODO
  * 
  * <pre>
- * 
- *    -------------------
- *    
- *    GET http://sandbox-1.orcid.org/oauth/authorize ?
- * 	      client_id=0000-0002-4639-029X & 
- * 	      scope=%2Forcid-profile%2Fread-limited &
- * 	      response_type=code & 
- * 	      redirect_uri=http%3A%2F%2Fjeb228-dev.library.cornell.edu%2Forcivo%2Fcallback & 
- * 	      state=1728933982
- *    If not logged in, show the login screen, with the parameters in hidden fields
- *        Else, redirect to /login with the orcid and parameters
- *    
  *    GET /login?orcid=xxxx-xxxx-xxxx-xxxx
  *        Record the log in, in the session. retrieve the auth parameters from the hidden fields, 
  *            and continue with the auth request
