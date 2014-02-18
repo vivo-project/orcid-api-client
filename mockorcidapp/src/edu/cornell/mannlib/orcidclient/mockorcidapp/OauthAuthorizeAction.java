@@ -52,8 +52,10 @@ public class OauthAuthorizeAction {
 	 */
 	public static boolean matches(String pathInfo) {
 		String[] parts = pathInfo.split("/");
-		return (parts.length == 3) && "oauth".equals(parts[1])
+		boolean match = (parts.length == 3) && "oauth".equals(parts[1])
 				&& "authorize".equals(parts[2]);
+		log.debug("matched " + pathInfo);
+		return match;
 	}
 
 	public OauthAuthorizeAction(HttpServletRequest req, HttpServletResponse resp) {
@@ -100,11 +102,13 @@ public class OauthAuthorizeAction {
 	private void redirectToLoggedIn() throws IOException {
 		String loggedInUrl = req.getContextPath() + "/login?orcid="
 				+ oss.getOrcid();
+		log.debug("redirecting to logged in: " + loggedInUrl);
 		resp.sendRedirect(loggedInUrl);
 	}
 	
 	private void redirectToLoggingIn() throws IOException {
 		String loggingInUrl = req.getContextPath() + "/login";
+		log.debug("redirecting to logging in: " + loggingInUrl);
 		resp.sendRedirect(loggingInUrl);
 	}
 

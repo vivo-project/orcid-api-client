@@ -73,12 +73,15 @@ public class LoginAction {
 						req.getContextPath(), pending.getScope(),
 						URLEncoder.encode(pending.getRedirectUri(), "UTF-8"),
 						pending.getState());
+		log.debug("redirecting to auth request: "+ url);
 		resp.sendRedirect(url);
 	}
 
 	private void showLoginPage() throws IOException {
 		resp.setContentType("text/html");
-		resp.getWriter().println(insertContext(insertLinks(getTemplate())));
+		String html = insertContext(insertLinks(getTemplate()));
+		log.debug("html for login page: \n" + html);
+		resp.getWriter().println(html);
 	}
 
 	private String getTemplate() throws IOException {
@@ -88,10 +91,7 @@ public class LoginAction {
 	private String insertLinks(String htmlTemplate) {
 		String linkTemplate = findLinkTemplate(htmlTemplate);
 		String links = assembleLinksHtml(linkTemplate);
-		String html = putLinksIntoTemplate(htmlTemplate, links);
-
-		log.debug("html with links: \n" + html);
-		return html;
+		return putLinksIntoTemplate(htmlTemplate, links);
 	}
 
 	private String findLinkTemplate(String htmlTemplate) {
