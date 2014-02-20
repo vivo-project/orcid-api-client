@@ -2,28 +2,89 @@
 
 package edu.cornell.mannlib.orcidclient.mockorcidapp;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * TODO
- */
-public class AuthResponseAction {
-	private final HttpServletRequest req;
-	private final HttpServletResponse resp;
+import edu.cornell.mannlib.orcidclient.mockorcidapp.OrcidSessionStatus.ScopeStatus;
 
-	public AuthResponseAction(HttpServletRequest req, HttpServletResponse resp) {
-		this.req = req;
-		this.resp = resp;
+/**
+ * <pre>
+ *    GET /authResponse?scope&approve=true
+ *        redirect to the callback
+ *        on approval, 
+ *           http://jeb228-dev.library.cornell.edu/orcivo/callback ? 
+ *                code=Feb8OP & 
+ *                state=1728933982
+ *           where code is random. Store it with the parameters in the context.
+ *        on disapproval,
+ *           http://jeb228-dev.library.cornell.edu/orcivo/callback ? 
+ *                error=access_denied &
+ *                error_description=User+denied+access&state=372991735
+ * </pre>
+ */
+public class AuthResponseAction extends AbstractAction {
+
+	private ScopeStatus pending;
+	private boolean authorized;
+
+	public static boolean matches(String pathInfo) {
+		return "/authResponse".equals(pathInfo);
 	}
 
-	/**
-	 * 
-	 */
-	public void doGet() {
-		// TODO Auto-generated method stub
-		throw new RuntimeException(
-				"AuthResponseAction.doGet() not implemented.");
+	public AuthResponseAction(HttpServletRequest req, HttpServletResponse resp) {
+		super(req, resp);
+	}
+
+	public void doGet() throws IOException {
+		confirmAuthParameter();
+		confirmPendingAuth();
+		if (authorized) {
+			recordApproval();
+			redirectWithSuccess();
+		} else {
+			failAuth();
+			redirectWithFailure();
+		}
+	}
+
+	private void confirmAuthParameter() {
+		String value = req.getParameter("auth");
+		if (value == null) {
+			throw new IllegalStateException(
+					"Authorize response has no parameter for 'auth'");
+		}
+		authorized = Boolean.valueOf(value);
+	}
+
+	private void confirmPendingAuth() {
+		if (!oss.isAuthorizationPending()) {
+			throw new IllegalStateException("Authorization is not pending.");
+		}
+		pending = oss.getPendingAuthorization();
+	}
+
+	private void recordApproval() {
+		pending.setAuthCode(String.valueOf(System.currentTimeMillis()));
+		oss.confirmPendingAuthorization();
+	}
+
+	private void redirectWithSuccess() throws IOException {
+		resp.sendRedirect(String.format("%s?code=%s&state=%s",
+				pending.getRedirectUri(), pending.getAuthCode(),
+				pending.getState()));
+	}
+
+	private void failAuth() {
+		oss.clearPendingAuthorization();
+	}
+
+	private void redirectWithFailure() throws IOException {
+		resp.sendRedirect(String.format(
+				"%s?error=%s&error_description=%s&state=%s",
+				pending.getRedirectUri(), "access_denied",
+				"User+denied+access", pending.getState()));
 	}
 
 }

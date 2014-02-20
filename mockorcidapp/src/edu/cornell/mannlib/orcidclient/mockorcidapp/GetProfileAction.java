@@ -31,19 +31,15 @@ import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
  *    Authorization: bearer 785e8e34-0f66-4c98-a138-c89bc8cb3886
  * </pre>
  */
-public class GetProfileAction {
+public class GetProfileAction extends AbstractAction {
 	private static final Log log = LogFactory.getLog(GetProfileAction.class);
-
-	private final HttpServletRequest req;
-	private final HttpServletResponse resp;
 
 	public static boolean matches(String pathInfo) {
 		return extractOrcid(pathInfo) != null;
 	}
 
 	public GetProfileAction(HttpServletRequest req, HttpServletResponse resp) {
-		this.req = req;
-		this.resp = resp;
+		super(req, resp);
 	}
 
 	public void doGet() throws IOException, OrcidClientException {

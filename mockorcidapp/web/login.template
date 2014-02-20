@@ -7,7 +7,7 @@
 	<img src="_CONTEXT_/loginImage.png">
 	<p>
 	   Login as:
-	   {{loginLink <div><a href="_CONTEXT_/login?orcid=_ORCID_">_ORCID_</a></div>}}
+	   {{loginLink <div><a href="_CONTEXT__SERVLET_/login?orcid=_ORCID_">_ORCID_</a></div>}}
 	</p>
 </body>
 </html>

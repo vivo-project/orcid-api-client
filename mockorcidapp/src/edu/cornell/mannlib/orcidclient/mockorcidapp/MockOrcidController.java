@@ -3,7 +3,6 @@
 package edu.cornell.mannlib.orcidclient.mockorcidapp;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,8 +20,6 @@ import edu.cornell.mannlib.orcidclient.OrcidClientException;
 public class MockOrcidController extends HttpServlet {
 	private static final Log log = LogFactory.getLog(MockOrcidController.class);
 
-	private static final Pattern PATTERN_AUTH_RESPONSE = null;
-	private static final Pattern PATTERN_OAUTH_TOKEN = null;
 
 	@Override
 	public void init() throws ServletException {
@@ -38,6 +35,7 @@ public class MockOrcidController extends HttpServlet {
 			throws ServletException, IOException {
 		log.debug("Request URL is '" + req.getRequestURL() + "'");
 		log.debug("Context path is '" + req.getContextPath() + "'");
+		log.debug("Servlet path is '" + req.getServletPath() + "'");
 		log.debug("Path info is '" + req.getPathInfo() + "'");
 		try {
 			String pathInfo = req.getPathInfo();
@@ -49,7 +47,7 @@ public class MockOrcidController extends HttpServlet {
 				new OauthAuthorizeAction(req, resp).doGet();
 			} else if (LoginAction.matches(pathInfo)) {
 				new LoginAction(req, resp).doGet();
-			} else if (PATTERN_AUTH_RESPONSE.matcher(pathInfo).matches()) {
+			} else if (AuthResponseAction.matches(pathInfo)) {
 				new AuthResponseAction(req, resp).doGet();
 			} else {
 				new BadRequestAction(req, resp).doGet();
@@ -64,7 +62,7 @@ public class MockOrcidController extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			String pathInfo = req.getPathInfo();
-			if (PATTERN_OAUTH_TOKEN.matcher(pathInfo).matches()) {
+			if (OauthTokenAction.matches(pathInfo)) {
 				new OauthTokenAction(req, resp).doPost();
 			} else {
 				new BadRequestAction(req, resp).doPost();
@@ -75,50 +73,3 @@ public class MockOrcidController extends HttpServlet {
 	}
 
 }
-
-/**
- * TODO
- * 
- * <pre>
- *    GET /login?orcid=xxxx-xxxx-xxxx-xxxx
- *        Record the log in, in the session. retrieve the auth parameters from the hidden fields, 
- *            and continue with the auth request
- *        Show the appropriate auth screen, with the scope in a hidden field
- *    
- *    GET /authRespond?scope&approve=true
- *        redirect to the callback
- *        on approval, 
- *           http://jeb228-dev.library.cornell.edu/orcivo/callback ? 
- *                code=Feb8OP & 
- *                state=1728933982
- *           where code is random. Store it with the parameters in the context.
- *        on disapproval,
- *           http://jeb228-dev.library.cornell.edu/orcivo/callback ? 
- *                error=access_denied &
- *                error_description=User+denied+access&state=372991735
- *    
- *    
- * On doPost, parse the URL:
- *    POST /oauth/token
- * 		List<NameValuePair> form = Form.form()
- * 				.add("client_id", context.getSetting(CLIENT_ID))
- * 				.add("client_secret", context.getSetting(CLIENT_SECRET))
- * 				.add("grant_type", "authorization_code")
- * 				.add("code", auth.getAuthorizationCode())
- * 				.add("redirect_uri", context.getCallbackUrl()).build();
- * 		Request request = Request.Post(context.getAccessTokenRequestUrl())
- * 				.addHeader("Accept", "application/json").bodyForm(form);
- *    Respond with 
- *    {
- *       "access_token":"785e8e34-0f66-4c98-a138-c89bc8cb3886",
- *       "token_type":"bearer",
- *       "refresh_token":"5ecda111-b6f9-4bd4-a21d-153962eabca9",
- *       "expires_in":628207503,
- *       "scope":"/orcid-profile/read-limited",
- *       "orcid":"0000-0003-3479-6011"
- *    }
- *    Where the ORCID is a truncation of the accessToken, which is a form of the auth_code.
- *    Scope is what was requested when the auth_code was created
- * 
- * </pre>
- */

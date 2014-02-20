@@ -3,20 +3,15 @@
 package edu.cornell.mannlib.orcidclient.mockorcidapp;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import edu.cornell.mannlib.orcidclient.mockorcidapp.OrcidSessionStatus.ScopeStatus;
 
 /**
  * <pre>
@@ -28,28 +23,18 @@ import edu.cornell.mannlib.orcidclient.mockorcidapp.OrcidSessionStatus.ScopeStat
  * 
  * TODO
  */
-public class LoginAction {
+public class LoginAction extends AbstractAction {
 	private static final Log log = LogFactory.getLog(LoginAction.class);
 
 	private static final Pattern LOGIN_LINK_PATTERN = Pattern
 			.compile("\\{\\{loginLink(.*)\\}\\}");
-
-	private final HttpServletRequest req;
-	private final HttpSession session;
-	private final ServletContext ctx;
-	private final HttpServletResponse resp;
-	private final OrcidSessionStatus oss;
 
 	public static boolean matches(String pathInfo) {
 		return "/login".equals(pathInfo);
 	}
 
 	public LoginAction(HttpServletRequest req, HttpServletResponse resp) {
-		this.req = req;
-		this.session = req.getSession();
-		this.ctx = this.session.getServletContext();
-		this.resp = resp;
-		this.oss = OrcidSessionStatus.fetch(this.session);
+		super(req, resp);
 	}
 
 	public void doGet() throws IOException {
@@ -67,13 +52,9 @@ public class LoginAction {
 	}
 
 	private void returnToAuthRequest() throws IOException {
-		ScopeStatus pending = oss.getPendingAuthorization();
-		String url = String
-				.format("%s/oauth/authorize?scope=%s&redirect_uri=%s&state=%s",
-						req.getContextPath(), pending.getScope(),
-						URLEncoder.encode(pending.getRedirectUri(), "UTF-8"),
-						pending.getState());
-		log.debug("redirecting to auth request: "+ url);
+		String url = req.getContextPath() + req.getServletPath()
+				+ "/oauth/authorize";
+		log.debug("redirecting to auth request: " + url);
 		resp.sendRedirect(url);
 	}
 
@@ -116,7 +97,8 @@ public class LoginAction {
 	}
 
 	private String insertContext(String template) {
-		return template.replace("_CONTEXT_", req.getContextPath());
+		return template.replace("_CONTEXT_", req.getContextPath()).replace(
+				"_SERVLET_", req.getServletPath());
 	}
 
 }

@@ -2,17 +2,23 @@
 
 package edu.cornell.mannlib.orcidclient.mockorcidapp;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import edu.cornell.mannlib.orcidclient.auth.AccessToken;
 import edu.cornell.mannlib.orcidclient.orcidmessage.ScopePathType;
 
 /**
- * TODO
+ * Hold the orcid status for this login session to the mock app.
  */
 public class OrcidSessionStatus {
+	private static final Log log = LogFactory.getLog(OrcidSessionStatus.class);
+
 	private static final String ATTRIBUTE_NAME = OrcidSessionStatus.class
 			.getName();
 
@@ -21,6 +27,7 @@ public class OrcidSessionStatus {
 	// ----------------------------------------------------------------------
 
 	public static OrcidSessionStatus fetch(HttpSession session) {
+		log.debug("session: " + session);
 		Object o = session.getAttribute(ATTRIBUTE_NAME);
 		if (o instanceof OrcidSessionStatus) {
 			return (OrcidSessionStatus) o;
@@ -36,7 +43,7 @@ public class OrcidSessionStatus {
 	// ----------------------------------------------------------------------
 
 	private String orcid;
-	private Map<ScopePathType, ScopeStatus> map;
+	private final Map<ScopePathType, ScopeStatus> statusMap = new HashMap<>();
 	private ScopeStatus pendingAuthorization;
 
 	public boolean isLoggedIn() {
@@ -51,6 +58,10 @@ public class OrcidSessionStatus {
 		this.orcid = orcid;
 	}
 
+	public boolean isAuthorizationPending() {
+		return pendingAuthorization != null;
+	}
+
 	public ScopeStatus getPendingAuthorization() {
 		return pendingAuthorization;
 	}
@@ -60,9 +71,37 @@ public class OrcidSessionStatus {
 		this.pendingAuthorization = new ScopeStatus(redirectUri, scope, state);
 	}
 
+	public void confirmPendingAuthorization() {
+		statusMap.put(pendingAuthorization.getScope(), pendingAuthorization);
+		clearPendingAuthorization();
+	}
+
+	public void clearPendingAuthorization() {
+		this.pendingAuthorization = null;
+	}
+
+	public ScopeStatus getStatusByAuthCode(String authCode) {
+		for (ScopeStatus ss : statusMap.values()) {
+			if (authCode.equals(ss.authCode)) {
+				return ss;
+			}
+		}
+		return null;
+	}
+
+	public ScopeStatus getStatusByScope(ScopePathType scope) {
+		return statusMap.get(scope);
+	}
+
 	// ----------------------------------------------------------------------
 	// Helper class
 	// ----------------------------------------------------------------------
+
+	@Override
+	public String toString() {
+		return "OrcidSessionStatus [orcid=" + orcid + ", pendingAuthorization="
+				+ pendingAuthorization + ", statusMap=" + statusMap + "]";
+	}
 
 	public static class ScopeStatus {
 		private final String redirectUri;
@@ -105,5 +144,13 @@ public class OrcidSessionStatus {
 			return state;
 		}
 
+		@Override
+		public String toString() {
+			return "ScopeStatus[redirectUri=" + redirectUri + ", scope="
+					+ scope + ", state=" + state + ", authCode=" + authCode
+					+ ", accessToken=" + accessToken + "]";
+		}
+
 	}
+
 }

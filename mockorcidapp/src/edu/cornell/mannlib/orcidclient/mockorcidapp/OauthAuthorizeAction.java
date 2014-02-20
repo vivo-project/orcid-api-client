@@ -4,14 +4,14 @@ package edu.cornell.mannlib.orcidclient.mockorcidapp;
 
 import java.io.IOException;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import edu.cornell.mannlib.orcidclient.mockorcidapp.OrcidSessionStatus.ScopeStatus;
 import edu.cornell.mannlib.orcidclient.orcidmessage.ScopePathType;
 
 /**
@@ -33,19 +33,13 @@ import edu.cornell.mannlib.orcidclient.orcidmessage.ScopePathType;
  * TODO What do we do if they are already authorized for a scope? It appears
  * that we go through it again.
  */
-public class OauthAuthorizeAction {
+public class OauthAuthorizeAction extends AbstractAction {
 	private static final Log log = LogFactory
 			.getLog(OauthAuthorizeAction.class);
-
-	private final HttpServletRequest req;
-	private final HttpSession session;
-	private final HttpServletResponse resp;
-	private final OrcidSessionStatus oss;
 
 	private String redirectUri;
 	private String state;
 	private ScopePathType scope;
-
 
 	/**
 	 * Match something like http://sandbox-1.orcid.org/oauth/authorize
@@ -54,15 +48,14 @@ public class OauthAuthorizeAction {
 		String[] parts = pathInfo.split("/");
 		boolean match = (parts.length == 3) && "oauth".equals(parts[1])
 				&& "authorize".equals(parts[2]);
-		log.debug("matched " + pathInfo);
+		if (match) {
+			log.debug("matched " + pathInfo);
+		}
 		return match;
 	}
 
 	public OauthAuthorizeAction(HttpServletRequest req, HttpServletResponse resp) {
-		this.req = req;
-		this.session = req.getSession();
-		this.resp = resp;
-		this.oss = OrcidSessionStatus.fetch(this.session);
+		super(req, resp);
 	}
 
 	public void doGet() throws IOException {
@@ -70,25 +63,23 @@ public class OauthAuthorizeAction {
 		setPendingAuthorization();
 
 		if (oss.isLoggedIn()) {
-			redirectToLoggedIn();
+			showAskAuthPage();
 		} else {
 			redirectToLoggingIn();
 		}
 	}
 
 	private void obtainAndValidateParameters() {
-		redirectUri = getRequiredParameter("redirect_uri");
-		state = getRequiredParameter("state");
-		scope = convertToScope(getRequiredParameter("scope"));
-	}
-
-	private String getRequiredParameter(String name) {
-		String value = req.getParameter(name);
-		if (value == null) {
-			throw new IllegalStateException(
-					"Authorize request has no parameter for '" + name + "'");
+		if (oss.isAuthorizationPending()) {
+			ScopeStatus pending = oss.getPendingAuthorization();
+			redirectUri = pending.getRedirectUri();
+			state = pending.getState();
+			scope = pending.getScope();
+		} else {
+			redirectUri = getRequiredParameter("redirect_uri");
+			state = getRequiredParameter("state");
+			scope = convertToScope(getRequiredParameter("scope"));
 		}
-		return value;
 	}
 
 	private ScopePathType convertToScope(String scopeString) {
@@ -99,17 +90,39 @@ public class OauthAuthorizeAction {
 		oss.setPendingAuthorization(redirectUri, scope, state);
 	}
 
-	private void redirectToLoggedIn() throws IOException {
-		String loggedInUrl = req.getContextPath() + "/login?orcid="
-				+ oss.getOrcid();
-		log.debug("redirecting to logged in: " + loggedInUrl);
-		resp.sendRedirect(loggedInUrl);
-	}
-	
 	private void redirectToLoggingIn() throws IOException {
-		String loggingInUrl = req.getContextPath() + "/login";
+		String loggingInUrl = req.getContextPath() + req.getServletPath()
+				+ "/login";
 		log.debug("redirecting to logging in: " + loggingInUrl);
 		resp.sendRedirect(loggingInUrl);
+	}
+
+	private void showAskAuthPage() throws IOException {
+		resp.setContentType("text/html");
+		String html = substituteStrings(getTemplate());
+		log.debug("html for login page: \n" + html);
+		resp.getWriter().println(html);
+	}
+
+	private String getTemplate() throws IOException {
+		return IOUtils.toString(ctx.getResourceAsStream("/askAuth.template"));
+	}
+
+	private String substituteStrings(String template) {
+		return template.replace("_CONTEXT_", req.getContextPath())
+				.replace("_SERVLET_", req.getServletPath())
+				.replace("_SCOPE_", getScopeString());
+	}
+
+	private CharSequence getScopeString() {
+		switch (scope) {
+		case ORCID_BIO_EXTERNAL_IDENTIFIERS_CREATE:
+			return "createExternalID";
+		case ORCID_PROFILE_READ_LIMITED:
+			return "readLimitedProfile";
+		default:
+			return "BOGUS";
+		}
 	}
 
 }
