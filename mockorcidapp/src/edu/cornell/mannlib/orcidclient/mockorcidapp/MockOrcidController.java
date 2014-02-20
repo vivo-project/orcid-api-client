@@ -64,6 +64,8 @@ public class MockOrcidController extends HttpServlet {
 			String pathInfo = req.getPathInfo();
 			if (OauthTokenAction.matches(pathInfo)) {
 				new OauthTokenAction(req, resp).doPost();
+			} else if (AddExternalIdAction.matches(pathInfo)) {
+				new AddExternalIdAction(req, resp).doPost();
 			} else {
 				new BadRequestAction(req, resp).doPost();
 			}

@@ -7,6 +7,9 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.cornell.mannlib.orcidclient.auth.AccessToken;
+import edu.cornell.mannlib.orcidclient.auth.AccessTokenFormatException;
+
 /**
  * Ignore client_id, client_secret, grant_type, redirect_uri
  * 
@@ -60,12 +63,13 @@ public class OauthTokenAction extends AbstractAction {
 		super(req, resp);
 	}
 
-	public void doPost() throws IOException {
+	public void doPost() throws IOException, AccessTokenFormatException {
 		authCode = getRequiredParameter("code");
 		auth = ocs.lookupByAuthCode(authCode);
 		if (auth == null) {
 			returnFailure();
 		} else {
+			auth.createAccessToken();
 			returnSuccess();
 		}
 	}
@@ -76,18 +80,22 @@ public class OauthTokenAction extends AbstractAction {
 	}
 
 	private void returnSuccess() throws IOException {
-		String json = String
-				.format("{ \n" //
+		resp.setContentType("application/json");
+		resp.getWriter().println(accessTokenToJson());
+	}
+
+	private String accessTokenToJson() {
+		AccessToken at = auth.getAccessToken();
+		return String.format(
+				"{ \n" //
 						+ "   \"access_token\":\"%s\", \n" //
-						+ "   \"token_type\":\"bearer\", \n" //
-						+ "   \"refresh_token\":\"bogus\", \n" //
-						+ "   \"expires_in\":628207503, \n" //
+						+ "   \"token_type\":\"%s\", \n" //
+						+ "   \"refresh_token\":\"%s\", \n" //
+						+ "   \"expires_in\":%d, \n" //
 						+ "   \"scope\":\"%s\", \n" //
 						+ "   \"orcid\":\"%s\" \n" //
 						+ "}", //
-						"ACCESS-" + authCode, auth.getScope().value(),
-						auth.getOrcid());
-		resp.setContentType("application/json");
-		resp.getWriter().println(json);
+				at.getAccessToken(), at.getTokenType(), at.getRefreshToken(),
+				at.getExpiresIn(), at.getScope(), at.getOrcid());
 	}
 }

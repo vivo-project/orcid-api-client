@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
+import edu.cornell.mannlib.orcidclient.auth.AccessToken;
+
 /**
  * A global store of AuthorizationData.
  * 
@@ -51,8 +53,18 @@ public class OrcidContextStatus {
 		return map.get(authCode);
 	}
 
+	public AuthorizationData lookupByAccessToken(String accessToken) {
+		for (AuthorizationData auth: map.values()) {
+			AccessToken at = auth.getAccessToken();
+			if ((at != null) && (accessToken.equals(at.getAccessToken()))) {
+				return auth;
+			}
+		}
+		return null;
+	}
 	@Override
 	public String toString() {
 		return "OrcidContextStatus[map=" + map + "]";
 	}
+
 }

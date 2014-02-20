@@ -3,6 +3,7 @@
 package edu.cornell.mannlib.orcidclient.mockorcidapp;
 
 import edu.cornell.mannlib.orcidclient.auth.AccessToken;
+import edu.cornell.mannlib.orcidclient.auth.AccessTokenFormatException;
 import edu.cornell.mannlib.orcidclient.orcidmessage.ScopePathType;
 
 /**
@@ -42,8 +43,20 @@ public class AuthorizationData {
 		return accessToken;
 	}
 
-	public void setAccessToken(AccessToken accessToken) {
-		this.accessToken = accessToken;
+	public void createAccessToken() throws AccessTokenFormatException {
+		String json = String
+				.format("{ \n" //
+						+ "   \"access_token\":\"%s\", \n" //
+						+ "   \"token_type\":\"bearer\", \n" //
+						+ "   \"refresh_token\":\"bogus\", \n" //
+						+ "   \"expires_in\":628207503, \n" //
+						+ "   \"scope\":\"%s\", \n" //
+						+ "   \"orcid\":\"%s\" \n" //
+						+ "}", //
+						"ACCESS-" + authCode, scope.value(),
+						orcid);
+
+		accessToken = new AccessToken(json);
 	}
 
 	public String getOrcid() {

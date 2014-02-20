@@ -49,13 +49,7 @@ public class OauthAuthorizeAction extends AbstractAction {
 	 * Match something like http://sandbox-1.orcid.org/oauth/authorize
 	 */
 	public static boolean matches(String pathInfo) {
-		String[] parts = pathInfo.split("/");
-		boolean match = (parts.length == 3) && "oauth".equals(parts[1])
-				&& "authorize".equals(parts[2]);
-		if (match) {
-			log.debug("matched " + pathInfo);
-		}
-		return match;
+		return "/oauth/authorize".equals(pathInfo);
 	}
 
 	public OauthAuthorizeAction(HttpServletRequest req, HttpServletResponse resp) {

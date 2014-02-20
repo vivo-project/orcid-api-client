@@ -43,10 +43,7 @@ public class AccessToken {
 			this.scope = json.getString("scope");
 			this.orcid = json.getString("orcid");
 
-			this.toString = "AccessToken[accessToken=" + accessToken
-					+ ", tokenType=" + tokenType + ", refreshToken="
-					+ refreshToken + ", expiresIn=" + expiresIn + ", scope="
-					+ scope + ", orcid=" + orcid + "]";
+			this.toString = jsonString;
 		} catch (Exception e) {
 			throw new AccessTokenFormatException(
 					"Failed to parse the ORID Access Token. JSON is '"
@@ -76,6 +73,10 @@ public class AccessToken {
 
 	public String getOrcid() {
 		return orcid;
+	}
+
+	public String toJson() {
+		return toString;
 	}
 
 	@Override
