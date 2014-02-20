@@ -16,13 +16,18 @@ public abstract class AbstractAction {
 	protected final ServletContext ctx;
 	protected final HttpServletResponse resp;
 	protected final OrcidSessionStatus oss;
+	protected final OrcidContextStatus ocs;
 
 	protected AbstractAction(HttpServletRequest req, HttpServletResponse resp) {
 		this.req = req;
+		
 		this.session = req.getSession();
-		this.ctx = this.session.getServletContext();
-		this.resp = resp;
 		this.oss = OrcidSessionStatus.fetch(this.session);
+
+		this.ctx = this.session.getServletContext();
+		this.ocs = OrcidContextStatus.fetch(this.ctx);
+		
+		this.resp = resp;
 	}
 
 	protected String getRequiredParameter(String name) {

@@ -48,6 +48,7 @@ public class BadRequestAction extends AbstractAction {
 		log.error("Path info was '" + req.getPathInfo() + "'");
 		log.error("Servlet path was '" + req.getServletPath() + "'");
 		log.error("SessionStatus is: " + oss);
+		log.error("ContextStatus is: " + ocs);
 	}
 
 }

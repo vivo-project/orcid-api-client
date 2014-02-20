@@ -7,8 +7,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.cornell.mannlib.orcidclient.mockorcidapp.OrcidSessionStatus.ScopeStatus;
-
 /**
  * Ignore client_id, client_secret, grant_type, redirect_uri
  * 
@@ -56,7 +54,7 @@ public class OauthTokenAction extends AbstractAction {
 	}
 
 	private String authCode;
-	private ScopeStatus status;
+	private AuthorizationData auth;
 
 	public OauthTokenAction(HttpServletRequest req, HttpServletResponse resp) {
 		super(req, resp);
@@ -64,8 +62,8 @@ public class OauthTokenAction extends AbstractAction {
 
 	public void doPost() throws IOException {
 		authCode = getRequiredParameter("code");
-		status = oss.getStatusByAuthCode(authCode);
-		if (status == null) {
+		auth = ocs.lookupByAuthCode(authCode);
+		if (auth == null) {
 			returnFailure();
 		} else {
 			returnSuccess();
@@ -87,8 +85,8 @@ public class OauthTokenAction extends AbstractAction {
 						+ "   \"scope\":\"%s\", \n" //
 						+ "   \"orcid\":\"%s\" \n" //
 						+ "}", //
-						"ACCESS-" + authCode, status.getScope().value(),
-						oss.getOrcid());
+						"ACCESS-" + authCode, auth.getScope().value(),
+						auth.getOrcid());
 		resp.setContentType("application/json");
 		resp.getWriter().println(json);
 	}

@@ -7,8 +7,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.cornell.mannlib.orcidclient.mockorcidapp.OrcidSessionStatus.ScopeStatus;
-
 /**
  * <pre>
  *    GET /authResponse?scope&approve=true
@@ -26,7 +24,7 @@ import edu.cornell.mannlib.orcidclient.mockorcidapp.OrcidSessionStatus.ScopeStat
  */
 public class AuthResponseAction extends AbstractAction {
 
-	private ScopeStatus pending;
+	private AuthorizationData pending;
 	private boolean authorized;
 
 	public static boolean matches(String pathInfo) {
@@ -66,8 +64,7 @@ public class AuthResponseAction extends AbstractAction {
 	}
 
 	private void recordApproval() {
-		pending.setAuthCode(String.valueOf(System.currentTimeMillis()));
-		oss.confirmPendingAuthorization();
+		oss.confirmPendingAuthorization(String.valueOf(System.currentTimeMillis()));
 	}
 
 	private void redirectWithSuccess() throws IOException {

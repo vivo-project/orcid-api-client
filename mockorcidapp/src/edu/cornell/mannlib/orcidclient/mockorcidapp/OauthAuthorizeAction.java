@@ -11,7 +11,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.cornell.mannlib.orcidclient.mockorcidapp.OrcidSessionStatus.ScopeStatus;
 import edu.cornell.mannlib.orcidclient.orcidmessage.ScopePathType;
 
 /**
@@ -29,6 +28,11 @@ import edu.cornell.mannlib.orcidclient.orcidmessage.ScopePathType;
  *    If not logged in, show the login screen, with the parameters in hidden fields
  *        Else, redirect to /login with the orcid and parameters
  * </pre>
+ * 
+ * When we get here, the required info may be in a pending AuthorizationInfo
+ * object, instead of the request. This would happen if we weren't logged in
+ * when we first got here, and had to stash the info and redirect to the login
+ * page.
  * 
  * TODO What do we do if they are already authorized for a scope? It appears
  * that we go through it again.
@@ -71,7 +75,7 @@ public class OauthAuthorizeAction extends AbstractAction {
 
 	private void obtainAndValidateParameters() {
 		if (oss.isAuthorizationPending()) {
-			ScopeStatus pending = oss.getPendingAuthorization();
+			AuthorizationData pending = oss.getPendingAuthorization();
 			redirectUri = pending.getRedirectUri();
 			state = pending.getState();
 			scope = pending.getScope();

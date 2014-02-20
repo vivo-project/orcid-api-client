@@ -2,15 +2,11 @@
 
 package edu.cornell.mannlib.orcidclient.mockorcidapp;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.cornell.mannlib.orcidclient.auth.AccessToken;
 import edu.cornell.mannlib.orcidclient.orcidmessage.ScopePathType;
 
 /**
@@ -32,7 +28,9 @@ public class OrcidSessionStatus {
 		if (o instanceof OrcidSessionStatus) {
 			return (OrcidSessionStatus) o;
 		} else {
-			OrcidSessionStatus oss = new OrcidSessionStatus();
+			OrcidContextStatus ocs = OrcidContextStatus.fetch(session
+					.getServletContext());
+			OrcidSessionStatus oss = new OrcidSessionStatus(ocs);
 			session.setAttribute(ATTRIBUTE_NAME, oss);
 			return oss;
 		}
@@ -42,16 +40,17 @@ public class OrcidSessionStatus {
 	// The instance
 	// ----------------------------------------------------------------------
 
+	private final OrcidContextStatus ocs;
+
 	private String orcid;
-	private final Map<ScopePathType, ScopeStatus> statusMap = new HashMap<>();
-	private ScopeStatus pendingAuthorization;
+	private AuthorizationData pendingAuthorization;
+
+	public OrcidSessionStatus(OrcidContextStatus ocs) {
+		this.ocs = ocs;
+	}
 
 	public boolean isLoggedIn() {
 		return orcid != null;
-	}
-
-	public String getOrcid() {
-		return orcid;
 	}
 
 	public void setOrcid(String orcid) {
@@ -62,17 +61,18 @@ public class OrcidSessionStatus {
 		return pendingAuthorization != null;
 	}
 
-	public ScopeStatus getPendingAuthorization() {
+	public AuthorizationData getPendingAuthorization() {
 		return pendingAuthorization;
 	}
 
 	public void setPendingAuthorization(String redirectUri,
 			ScopePathType scope, String state) {
-		this.pendingAuthorization = new ScopeStatus(redirectUri, scope, state);
+		this.pendingAuthorization = new AuthorizationData(redirectUri, scope,
+				state);
 	}
 
-	public void confirmPendingAuthorization() {
-		statusMap.put(pendingAuthorization.getScope(), pendingAuthorization);
+	public void confirmPendingAuthorization(String authCode) {
+		ocs.store(authCode, orcid, pendingAuthorization);
 		clearPendingAuthorization();
 	}
 
@@ -80,77 +80,10 @@ public class OrcidSessionStatus {
 		this.pendingAuthorization = null;
 	}
 
-	public ScopeStatus getStatusByAuthCode(String authCode) {
-		for (ScopeStatus ss : statusMap.values()) {
-			if (authCode.equals(ss.authCode)) {
-				return ss;
-			}
-		}
-		return null;
-	}
-
-	public ScopeStatus getStatusByScope(ScopePathType scope) {
-		return statusMap.get(scope);
-	}
-
-	// ----------------------------------------------------------------------
-	// Helper class
-	// ----------------------------------------------------------------------
-
 	@Override
 	public String toString() {
-		return "OrcidSessionStatus [orcid=" + orcid + ", pendingAuthorization="
-				+ pendingAuthorization + ", statusMap=" + statusMap + "]";
-	}
-
-	public static class ScopeStatus {
-		private final String redirectUri;
-		private final ScopePathType scope;
-		private final String state;
-		private String authCode;
-		private AccessToken accessToken;
-
-		public ScopeStatus(String redirectUri, ScopePathType scope, String state) {
-			this.redirectUri = redirectUri;
-			this.scope = scope;
-			this.state = state;
-		}
-
-		public String getAuthCode() {
-			return authCode;
-		}
-
-		public void setAuthCode(String authCode) {
-			this.authCode = authCode;
-		}
-
-		public AccessToken getAccessToken() {
-			return accessToken;
-		}
-
-		public void setAccessToken(AccessToken accessToken) {
-			this.accessToken = accessToken;
-		}
-
-		public String getRedirectUri() {
-			return redirectUri;
-		}
-
-		public ScopePathType getScope() {
-			return scope;
-		}
-
-		public String getState() {
-			return state;
-		}
-
-		@Override
-		public String toString() {
-			return "ScopeStatus[redirectUri=" + redirectUri + ", scope="
-					+ scope + ", state=" + state + ", authCode=" + authCode
-					+ ", accessToken=" + accessToken + "]";
-		}
-
+		return "OrcidSessionStatus[orcid=" + orcid + ", pendingAuthorization="
+				+ pendingAuthorization + "]";
 	}
 
 }
