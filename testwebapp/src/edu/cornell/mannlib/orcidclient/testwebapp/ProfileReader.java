@@ -49,8 +49,7 @@ public class ProfileReader extends OrcidActor {
 			String marshalled = occ.marshall(message);
 
 			out.println("<html><head></head><body>");
-			out.println("<h1>User profile for " + authManager.getOrcId()
-					+ "</h1>");
+			out.println("<h1>User profile:</h1>");
 			out.println("<pre>" + StringEscapeUtils.escapeHtml(marshalled)
 					+ "</pre>");
 			out.println("</body></html>");

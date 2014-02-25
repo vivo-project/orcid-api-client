@@ -22,7 +22,52 @@ public abstract class OrcidClientContext {
 	private static final Log log = LogFactory.getLog(OrcidClientContext.class);
 
 	public enum Setting {
-		CLIENT_ID, AUTHORIZED_API_BASE_URL, PUBLIC_API_BASE_URL, MESSAGE_VERSION, CALLBACK_PATH, WEBAPP_BASE_URL, CLIENT_SECRET, OAUTH_TOKEN_URL, OAUTH_AUTHORIZE_URL
+		/**
+		 * ID assigned by ORCID to the application.
+		 */
+		CLIENT_ID,
+		/**
+		 * Secret code assigned by ORCID to the application.
+		 */
+		CLIENT_SECRET,
+
+		/**
+		 * Root of the public API (requires no authorization)
+		 */
+		PUBLIC_API_BASE_URL,
+
+		/**
+		 * Root of the restricted API (requires authorization)
+		 */
+		AUTHORIZED_API_BASE_URL,
+
+		/**
+		 * URL to obtain an authorization code. This is sent to the browser as a
+		 * redirect, so the user can log in at the ORCID site.
+		 */
+		OAUTH_AUTHORIZE_URL,
+
+		/**
+		 * URL to exchange the authorization code for an OAuth access token.
+		 */
+		OAUTH_TOKEN_URL,
+
+		/**
+		 * Version of the OrcidMessage schema that the API uses.
+		 */
+		MESSAGE_VERSION,
+
+		/**
+		 * The base URL for contacting this webapp (including context path. Used
+		 * when building the redirect URL for the browser.
+		 */
+		WEBAPP_BASE_URL,
+
+		/**
+		 * Where should ORCID call back to during the auth dance? Path within
+		 * this webapp.
+		 */
+		CALLBACK_PATH
 	}
 
 	// ----------------------------------------------------------------------

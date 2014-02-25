@@ -60,8 +60,7 @@ public class ExternalIdRestrictor extends OrcidActor {
 
 			out.println("<html><head></head><body>");
 			out.println("<h1>Added External ID</h1>");
-			out.println("<h1>User profile for " + authManager.getOrcId()
-					+ "</h1>");
+			out.println("<h1>User profile:</h1>");
 			out.println("<pre>" + StringEscapeUtils.escapeHtml(marshalled)
 					+ "</pre>");
 			out.println("</body></html>");

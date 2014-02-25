@@ -32,13 +32,9 @@ public class AuthorizationManager {
 	private static final Log log = LogFactory
 			.getLog(AuthorizationManager.class);
 
-	public static final String NOT_AUTHENTICATED = "Not Authenticated";
-
 	private final OrcidClientContext context;
 	private final HttpServletRequest req;
 	private final AuthorizationCache cache;
-
-	private String orcId = NOT_AUTHENTICATED;
 
 	public AuthorizationManager(OrcidClientContext context,
 			HttpServletRequest req) {
@@ -172,14 +168,6 @@ public class AuthorizationManager {
 		} catch (IOException e) {
 			return auth.setFailure("Request for access token failed.", e);
 		}
-	}
-
-	public String getOrcId() {
-		return orcId;
-	}
-
-	public void setOrcId(String orcId) {
-		this.orcId = orcId;
 	}
 
 	public AuthorizationStatus getAuthorizationStatus(ApiAction action) {

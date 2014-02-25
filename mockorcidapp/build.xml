@@ -29,6 +29,7 @@ all      - Runs "clean", then "deploy".
 clean    - Delete all artifacts so the next build will be from scratch.
 compile  - Compile the Java source files.
 deploy   - Deploy the application directly into the Tomcat webapps directory.
+war      - Package the mock app for use elsewhere.
 	    </echo>
 	</target>
 
@@ -93,10 +94,17 @@ deploy   - Deploy the application directly into the Tomcat webapps directory.
 	</target>
 
 	<!-- ================================= 
+          target: war              
+         ================================= -->
+    <target name="war" depends="compile" description="Build the app and put it into a file.">
+        <war destfile="${build.dir}/mockorcid.war" basedir="${war.dir}"></war>
+    </target>
+
+	<!-- ================================= 
              target: deploy              
              ================================= -->
 	<target name="deploy"
-	        depends="compile"
+	        depends="war"
 	        description="--> Build the app and install in Tomcat">
 		<property name="webapp.deploy.home"
 		          value="${tomcat.home}/webapps/${webapp.name}" />

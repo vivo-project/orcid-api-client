@@ -23,12 +23,12 @@ public class AccessToken {
 	private final String toString;
 
 	private AccessToken() {
-		this.accessToken = "NONE";
+		this.accessToken = "NO_ACCESS_TOKEN";
 		this.tokenType = "";
 		this.refreshToken = "";
 		this.expiresIn = 0;
-		this.scope = "";
-		this.orcid = "";
+		this.scope = "NO_SCOPE";
+		this.orcid = "NOT_AUTHENTICATED";
 		this.toString = "No AccessToken";
 	}
 
