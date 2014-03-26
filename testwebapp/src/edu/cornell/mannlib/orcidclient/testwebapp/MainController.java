@@ -38,7 +38,9 @@ public class MainController extends HttpServlet {
 			log.debug("Request parameters: " + dumpParameterMap(req));
 		}
 
-		if (req.getParameter("ReadPublic") != null) {
+		if (req.getParameter("Authenticate") != null) {
+			new AuthenticationRequester(req, resp).exec();
+		} else if (req.getParameter("ReadPublic") != null) {
 			new PublicBioReader(req, resp).exec();
 		} else if (req.getParameter("ReadProfile") != null) {
 			new ProfileReader(req, resp).exec();

@@ -7,6 +7,8 @@ package edu.cornell.mannlib.orcidclient.actions;
  */
 public enum ApiAction {
 	NO_ACTION(""),
+	
+	AUTHENTICATE("/authenticate"),
 
 	READ_PROFILE("/orcid-profile/read-limited"),
 
