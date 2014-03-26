@@ -118,6 +118,8 @@ public class OauthAuthorizeAction extends AbstractAction {
 			return "createExternalID";
 		case ORCID_PROFILE_READ_LIMITED:
 			return "readLimitedProfile";
+		case AUTHENTICATE:
+			return "authenticate";
 		default:
 			return "BOGUS";
 		}
