@@ -5,6 +5,12 @@ package edu.cornell.mannlib.orcidclient.actions;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +23,7 @@ import org.apache.http.client.utils.URIUtils;
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
 import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
 import edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting;
+import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidId;
 import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
 
 /**
@@ -27,7 +34,7 @@ import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
  * </pre>
  * 
  * @see http://support.orcid.org/knowledgebase/articles/
- *      132271-retrieving-data-with -the-public-api
+ *      132271-retrieving-data-with-the-public-api
  */
 public class ReadPublicBioAction {
 	private static final Log log = LogFactory.getLog(ReadPublicBioAction.class);
@@ -48,7 +55,12 @@ public class ReadPublicBioAction {
 			Response response = request.execute();
 			Content content = response.returnContent();
 			String string = content.asString();
-			return occ.unmarshall(string);
+			log.debug("Public Bio: " + string);
+			OrcidMessage message = occ.unmarshall(string);
+			if (message.getOrcidProfile().getOrcidIdentifier() == null) {
+				saveFrom1_0_23(string, message);
+			}
+			return message;
 		} catch (URISyntaxException e) {
 			throw new OrcidClientException(
 					"API_BASE_URL is not syntactically valid.", e);
@@ -61,6 +73,34 @@ public class ReadPublicBioAction {
 		} catch (IOException e) {
 			throw new OrcidClientException("Failed to read profile", e);
 		}
+	}
+
+	/**
+	 * If the public bio is returned in message format 1.0.23, we need to parse
+	 * some of it manually.
+	 */
+	private void saveFrom1_0_23(String string, OrcidMessage message) {
+		String path = null;
+		Matcher mPath = Pattern.compile("<orcid>(.*)</orcid>").matcher(string);
+		if (mPath.find()) {
+			path = mPath.group(1);
+		}
+
+		String uri = null;
+		Matcher mUri = Pattern.compile("<orcid-id>(.*)</orcid-id>").matcher(
+				string);
+		if (mUri.find()) {
+			uri = mUri.group(1);
+		}
+
+		OrcidId orcidId = new OrcidId();
+		List<JAXBElement<String>> content = orcidId.getContent();
+		content.add(new JAXBElement<String>(new QName(
+				"http://www.orcid.org/ns/orcid", "path"), String.class, path));
+		content.add(new JAXBElement<String>(new QName(
+				"http://www.orcid.org/ns/orcid", "uri"), String.class, uri));
+		message.getOrcidProfile().setOrcidIdentifier(orcidId);
+		log.warn("Rescue from 1_0_23: path='" + path + "', uri='" + uri + "'");
 	}
 
 }
