@@ -48,7 +48,6 @@ public class AuthorizationData {
 				.format("{ \n" //
 						+ "   \"access_token\":\"%s\", \n" //
 						+ "   \"token_type\":\"bearer\", \n" //
-						+ "   \"refresh_token\":\"bogus\", \n" //
 						+ "   \"expires_in\":628207503, \n" //
 						+ "   \"scope\":\"%s\", \n" //
 						+ "   \"orcid\":\"%s\" \n" //

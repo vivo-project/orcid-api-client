@@ -16,7 +16,6 @@ public class AccessToken {
 
 	private final String accessToken;
 	private final String tokenType;
-	private final String refreshToken;
 	private final Integer expiresIn;
 	private final String scope;
 	private final String orcid;
@@ -25,7 +24,6 @@ public class AccessToken {
 	private AccessToken() {
 		this.accessToken = "NO_ACCESS_TOKEN";
 		this.tokenType = "";
-		this.refreshToken = "";
 		this.expiresIn = 0;
 		this.scope = "NO_SCOPE";
 		this.orcid = "NOT_AUTHENTICATED";
@@ -38,7 +36,6 @@ public class AccessToken {
 			JsonObject json = (JsonObject) reader.read();
 			this.accessToken = json.getString("access_token");
 			this.tokenType = json.getString("token_type");
-			this.refreshToken = json.getString("refresh_token");
 			this.expiresIn = json.getInt("expires_in");
 			this.scope = json.getString("scope");
 			this.orcid = json.getString("orcid");
@@ -57,10 +54,6 @@ public class AccessToken {
 
 	public String getTokenType() {
 		return tokenType;
-	}
-
-	public String getRefreshToken() {
-		return refreshToken;
 	}
 
 	public Integer getExpiresIn() {

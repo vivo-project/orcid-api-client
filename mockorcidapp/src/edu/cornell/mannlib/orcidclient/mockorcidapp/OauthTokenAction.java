@@ -36,7 +36,6 @@ import edu.cornell.mannlib.orcidclient.auth.AccessTokenFormatException;
  *    {
  *       "access_token":"785e8e34-0f66-4c98-a138-c89bc8cb3886",
  *       "token_type":"bearer",
- *       "refresh_token":"5ecda111-b6f9-4bd4-a21d-153962eabca9",
  *       "expires_in":628207503,
  *       "scope":"/orcid-profile/read-limited",
  *       "orcid":"0000-0003-3479-6011"
@@ -45,8 +44,8 @@ import edu.cornell.mannlib.orcidclient.auth.AccessTokenFormatException;
  *    Scope is what was requested when the auth_code was created
  * </pre>
  * 
- * token_type is hard-coded. Use hard-coded bogus values for refresh_token,
- * expires_in. Get scope and orcid from the authorization with this code.
+ * token_type is hard-coded. Use hard-coded bogus value for expires_in. Get
+ * scope and orcid from the authorization with this code.
  * 
  * TODO: How do we respond if the authCode is not found?
  */
@@ -90,12 +89,11 @@ public class OauthTokenAction extends AbstractAction {
 				"{ \n" //
 						+ "   \"access_token\":\"%s\", \n" //
 						+ "   \"token_type\":\"%s\", \n" //
-						+ "   \"refresh_token\":\"%s\", \n" //
 						+ "   \"expires_in\":%d, \n" //
 						+ "   \"scope\":\"%s\", \n" //
 						+ "   \"orcid\":\"%s\" \n" //
 						+ "}", //
-				at.getAccessToken(), at.getTokenType(), at.getRefreshToken(),
-				at.getExpiresIn(), at.getScope(), at.getOrcid());
+				at.getAccessToken(), at.getTokenType(), at.getExpiresIn(),
+				at.getScope(), at.getOrcid());
 	}
 }
