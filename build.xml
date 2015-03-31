@@ -17,7 +17,7 @@
 
 	<property name="distribute.dir" location="distribute" />
 	<property name="product.name" value="orcid-api-client" />
-	<property name="release.level" value="0.1" />
+	<property name="release.level" value="0.2" />
 	<property name="distribute.jar.file"
 	          location="${distribute.dir}/${product.name}-${release.level}.jar" />
 	<property name="distribute.zip.file"
