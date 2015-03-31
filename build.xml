@@ -9,7 +9,7 @@
 
 	<property name="src.dir" location="src" />
 	<property name="lib.dir" location="lib" />
-	<property name="schema.file" location="schema/orcid-message-1.1.xsd" />
+	<property name="schema.file" location="schema/orcid-message-1.2.xsd" />
 
 	<property name="build.dir" location=".build" />
 	<property name="src.generated.dir" location="${build.dir}/generated" />
