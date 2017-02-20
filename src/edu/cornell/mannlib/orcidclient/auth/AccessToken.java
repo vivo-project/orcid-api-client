@@ -2,11 +2,8 @@
 
 package edu.cornell.mannlib.orcidclient.auth;
 
-import java.io.StringReader;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * The information associated with an ORCID Access Token. Immutable.
@@ -32,13 +29,14 @@ public class AccessToken {
 
 	public AccessToken(String jsonString) throws AccessTokenFormatException {
 		try {
-			JsonReader reader = Json.createReader(new StringReader(jsonString));
-			JsonObject json = (JsonObject) reader.read();
-			this.accessToken = json.getString("access_token");
-			this.tokenType = json.getString("token_type");
-			this.expiresIn = json.getInt("expires_in");
-			this.scope = json.getString("scope");
-			this.orcid = json.getString("orcid");
+			ObjectMapper mapper = new ObjectMapper();
+			ObjectNode json = (ObjectNode) mapper.readTree(jsonString);
+
+			this.accessToken = json.get("access_token").textValue();
+			this.tokenType = json.get("token_type").textValue();
+			this.expiresIn = json.get("expires_in").intValue();
+			this.scope = json.get("scope").textValue();
+			this.orcid = json.get("orcid").textValue();
 
 			this.toString = jsonString;
 		} catch (Exception e) {
