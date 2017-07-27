@@ -14,11 +14,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
-import edu.cornell.mannlib.orcidclient.orcidmessage.ExternalIdentifier;
-import edu.cornell.mannlib.orcidclient.orcidmessage.ExternalIdentifiers;
-import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidBio;
-import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
-import edu.cornell.mannlib.orcidclient.orcidmessage.ScopePathType;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.ExternalIdentifier;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.ExternalIdentifiers;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.OrcidBio;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.OrcidMessage;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.ScopePathType;
 
 /**
  * Add an exernal ID to the profile.

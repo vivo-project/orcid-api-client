@@ -2,8 +2,6 @@
 
 package edu.cornell.mannlib.orcidclient.beans;
 
-import edu.cornell.mannlib.orcidclient.orcidmessage.Visibility;
-
 /**
  * Information required to add an External ID to the ORCID Profile.
  */

@@ -17,7 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
-import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.OrcidMessage;
 
 /**
  * TODO

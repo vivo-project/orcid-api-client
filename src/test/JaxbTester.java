@@ -1,6 +1,6 @@
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
 import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
-import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.OrcidMessage;
 
 
 /* $This file is distributed under the terms of the license in /doc/license.txt$ */

@@ -13,7 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
 import edu.cornell.mannlib.orcidclient.actions.ActionManager;
 import edu.cornell.mannlib.orcidclient.auth.AuthorizationManager;
-import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.OrcidMessage;
 
 /**
  * TODO
@@ -32,30 +32,14 @@ public abstract class OrcidClientContext {
 		CLIENT_SECRET,
 
 		/**
-		 * Root of the public API (requires no authorization)
+		 * Version - e.g. 1.2, 2.0
 		 */
-		PUBLIC_API_BASE_URL,
+		API_VERSION,
 
 		/**
-		 * Root of the restricted API (requires authorization)
+		 * Environement - public or sandbox
 		 */
-		AUTHORIZED_API_BASE_URL,
-
-		/**
-		 * URL to obtain an authorization code. This is sent to the browser as a
-		 * redirect, so the user can log in at the ORCID site.
-		 */
-		OAUTH_AUTHORIZE_URL,
-
-		/**
-		 * URL to exchange the authorization code for an OAuth access token.
-		 */
-		OAUTH_TOKEN_URL,
-
-		/**
-		 * Version of the OrcidMessage schema that the API uses.
-		 */
-		MESSAGE_VERSION,
+		API_ENVIRONMENT,
 
 		/**
 		 * The base URL for contacting this webapp (including context path. Used
@@ -108,6 +92,12 @@ public abstract class OrcidClientContext {
 
 	public abstract String getAccessTokenRequestUrl();
 
+	public abstract String getApiVersion();
+
+	public abstract String getApiPublicUrl();
+
+	public abstract String getApiMemberUrl();
+
 	public abstract OrcidMessage unmarshall(String xml)
 			throws OrcidClientException;
 
@@ -153,6 +143,21 @@ public abstract class OrcidClientContext {
 
 		@Override
 		public String getAccessTokenRequestUrl() {
+			throw new IllegalStateException(MESSAGE);
+		}
+
+		@Override
+		public String getApiVersion() {
+			throw new IllegalStateException(MESSAGE);
+		}
+
+		@Override
+		public String getApiPublicUrl() {
+			throw new IllegalStateException(MESSAGE);
+		}
+
+		@Override
+		public String getApiMemberUrl() {
 			throw new IllegalStateException(MESSAGE);
 		}
 

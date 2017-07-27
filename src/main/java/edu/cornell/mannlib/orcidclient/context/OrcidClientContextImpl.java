@@ -2,11 +2,6 @@
 
 package edu.cornell.mannlib.orcidclient.context;
 
-import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.CALLBACK_PATH;
-import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.OAUTH_AUTHORIZE_URL;
-import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.OAUTH_TOKEN_URL;
-import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.WEBAPP_BASE_URL;
-
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
@@ -30,7 +25,9 @@ import org.apache.http.client.utils.URIUtils;
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
 import edu.cornell.mannlib.orcidclient.actions.ActionManager;
 import edu.cornell.mannlib.orcidclient.auth.AuthorizationManager;
-import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.OrcidMessage;
+
+import static edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting.*;
 
 /**
  * TODO
@@ -43,8 +40,7 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 	private final JAXBContext jaxbContext;
 
 	private final String callbackUrl;
-	private final String authCodeRequestUrl;
-	private final String accessTokenRequestUrl;
+	private final OrcidAPIConfig apiConfig;
 
 	public OrcidClientContextImpl(Map<Setting, String> settings)
 			throws OrcidClientException {
@@ -60,11 +56,22 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 			jaxbContext = JAXBContext.newInstance(packageName);
 
 			callbackUrl = resolvePathWithWebapp(getSetting(CALLBACK_PATH));
-			
-			authCodeRequestUrl = new URI(getSetting(OAUTH_AUTHORIZE_URL))
-					.toString();
-			accessTokenRequestUrl = new URI(getSetting(OAUTH_TOKEN_URL))
-					.toString();
+
+			if ("2.0".equalsIgnoreCase(getSetting(API_VERSION))) {
+				if ("sandbox".equalsIgnoreCase(getSetting(API_ENVIRONMENT))) {
+//					apiConfig = OrcidAPIConfig.SANDBOX_2_0;
+					apiConfig = OrcidAPIConfig.SANDBOX_1_2;
+				} else {
+//					apiConfig = OrcidAPIConfig.API_2_0;
+					apiConfig = OrcidAPIConfig.API_1_2;
+				}
+			} else {
+				if ("sandbox".equalsIgnoreCase(getSetting(API_ENVIRONMENT))) {
+					apiConfig = OrcidAPIConfig.SANDBOX_1_2;
+				} else {
+					apiConfig = OrcidAPIConfig.API_1_2;
+				}
+			}
 		} catch (JAXBException | URISyntaxException e) {
 			throw new OrcidClientException(
 					"Failed to create the OrcidClientContext", e);
@@ -83,13 +90,23 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 
 	@Override
 	public String getAuthCodeRequestUrl() {
-		return authCodeRequestUrl;
+		return apiConfig.OAUTH_URL;
 	}
 
 	@Override
 	public String getAccessTokenRequestUrl() {
-		return accessTokenRequestUrl;
+		return apiConfig.TOKEN_URL;
 	}
+
+	@Override
+	public String getApiVersion() { return apiConfig.VERSION; }
+
+	@Override
+	public String getApiPublicUrl() { return apiConfig.PUBLIC_URL; }
+
+	@Override
+	public String getApiMemberUrl() { return apiConfig.MEMBER_URL; }
+
 
 	@Override
 	public ActionManager getActionManager(HttpServletRequest req) {
@@ -145,8 +162,8 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 	@Override
 	public String toString() {
 		return "OrcidClientContextImpl[settings=" + settings + ", callbackUrl="
-				+ callbackUrl + ", authCodeRequestUrl=" + authCodeRequestUrl
-				+ ", accessTokenRequestUrl=" + accessTokenRequestUrl + "]";
+				+ callbackUrl + ", authCodeRequestUrl=" + getAuthCodeRequestUrl()
+				+ ", accessTokenRequestUrl=" + getAccessTokenRequestUrl() + "]";
 	}
 
 }

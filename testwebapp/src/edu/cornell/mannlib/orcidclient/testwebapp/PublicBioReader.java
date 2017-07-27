@@ -11,7 +11,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import edu.cornell.mannlib.orcidclient.OrcidClientException;
 import edu.cornell.mannlib.orcidclient.actions.ReadPublicBioAction;
-import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.OrcidMessage;
 
 /**
  * TODO

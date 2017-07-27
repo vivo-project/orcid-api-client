@@ -1,11 +1,21 @@
 /* $This file is distributed under the terms of the license in /doc/license.txt$ */
 
-package edu.cornell.mannlib.orcidclient.actions;
+package edu.cornell.mannlib.orcidclient.actions.version_1_0;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import edu.cornell.mannlib.orcidclient.OrcidClientException;
+import edu.cornell.mannlib.orcidclient.auth.AccessToken;
+import edu.cornell.mannlib.orcidclient.beans.ExternalId;
+import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
+import edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting;
+import edu.cornell.mannlib.orcidclient.model.OrcidProfile;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.ExternalIdCommonName;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.ExternalIdReference;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.ExternalIdUrl;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.ExternalIdentifier;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.ExternalIdentifiers;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.OrcidBio;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.OrcidMessage;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.Visibility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.HttpResponseException;
@@ -15,19 +25,9 @@ import org.apache.http.client.fluent.Response;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.entity.ContentType;
 
-import edu.cornell.mannlib.orcidclient.OrcidClientException;
-import edu.cornell.mannlib.orcidclient.auth.AccessToken;
-import edu.cornell.mannlib.orcidclient.beans.ExternalId;
-import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
-import edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting;
-import edu.cornell.mannlib.orcidclient.orcidmessage.ExternalIdCommonName;
-import edu.cornell.mannlib.orcidclient.orcidmessage.ExternalIdReference;
-import edu.cornell.mannlib.orcidclient.orcidmessage.ExternalIdUrl;
-import edu.cornell.mannlib.orcidclient.orcidmessage.ExternalIdentifier;
-import edu.cornell.mannlib.orcidclient.orcidmessage.ExternalIdentifiers;
-import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidBio;
-import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
-import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidProfile;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Example using Curl:
@@ -63,7 +63,7 @@ import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidProfile;
  * @see http://support.orcid.org/knowledgebase/articles/186983-add-external-ids-
  *      technical-developer
  */
-public class AddExternalIdAction {
+public class AddExternalIdAction implements edu.cornell.mannlib.orcidclient.actions.AddExternalIdAction {
 	private static final Log log = LogFactory.getLog(AddExternalIdAction.class);
 
 	private final OrcidClientContext occ;
@@ -72,11 +72,12 @@ public class AddExternalIdAction {
 		this.occ = OrcidClientContext.getInstance();
 	}
 
-	public OrcidMessage execute(ExternalId externalId, AccessToken accessToken)
+	@Override
+	public OrcidProfile execute(ExternalId externalId, AccessToken accessToken)
 			throws OrcidClientException {
 
 		try {
-			URI baseUri = new URI(occ.getSetting(Setting.AUTHORIZED_API_BASE_URL));
+			URI baseUri = new URI(occ.getApiMemberUrl());
 			String requestUrl = URIUtils.resolve(baseUri,
 					accessToken.getOrcid() + "/orcid-bio/external-identifiers")
 					.toString();
@@ -98,8 +99,7 @@ public class AddExternalIdAction {
 			Content content = response.returnContent();
 			String string = content.asString();
 			log.debug("Content from AddExternalID was: " + string);
-
-			return occ.unmarshall(string);
+			return Util.toModel(occ.unmarshall(string));
 		} catch (URISyntaxException e) {
 			throw new OrcidClientException(
 					"API_BASE_URL is not syntactically valid.", e);
@@ -131,17 +131,17 @@ public class AddExternalIdAction {
 
 		ExternalIdentifiers eis = new ExternalIdentifiers();
 		eis.getExternalIdentifier().add(ei);
-		eis.setVisibility(externalId.getVisibility());
+		eis.setVisibility(Visibility.fromValue(externalId.getVisibility().value()));
 
 		OrcidBio ob = new OrcidBio();
 		ob.setExternalIdentifiers(eis);
 
-		OrcidProfile op = new OrcidProfile();
+		edu.cornell.mannlib.orcidclient.responses.message_1_2.OrcidProfile op = new edu.cornell.mannlib.orcidclient.responses.message_1_2.OrcidProfile();
 		op.setOrcidBio(ob);
 
 		OrcidMessage om = new OrcidMessage();
 		om.setOrcidProfile(op);
-		om.setMessageVersion(occ.getSetting(Setting.MESSAGE_VERSION));
+		om.setMessageVersion(occ.getApiVersion());
 
 		return om;
 	}

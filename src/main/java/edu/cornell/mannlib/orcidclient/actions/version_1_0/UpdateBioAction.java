@@ -1,11 +1,13 @@
 /* $This file is distributed under the terms of the license in /doc/license.txt$ */
 
-package edu.cornell.mannlib.orcidclient.actions;
+package edu.cornell.mannlib.orcidclient.actions.version_1_0;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import edu.cornell.mannlib.orcidclient.OrcidClientException;
+import edu.cornell.mannlib.orcidclient.auth.AccessToken;
+import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
+import edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting;
+import edu.cornell.mannlib.orcidclient.model.OrcidProfile;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.OrcidMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.HttpResponseException;
@@ -15,11 +17,9 @@ import org.apache.http.client.fluent.Response;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.entity.ContentType;
 
-import edu.cornell.mannlib.orcidclient.OrcidClientException;
-import edu.cornell.mannlib.orcidclient.auth.AccessToken;
-import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
-import edu.cornell.mannlib.orcidclient.context.OrcidClientContext.Setting;
-import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * <pre>
@@ -32,7 +32,7 @@ import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
  * @see http://support.orcid.org/knowledgebase/articles/
  *      310643-tutorial-update-bio-with-curl
  */
-public class UpdateBioAction {
+public class UpdateBioAction implements edu.cornell.mannlib.orcidclient.actions.UpdateBioAction {
 	private static final Log log = LogFactory.getLog(UpdateBioAction.class);
 
 	private final OrcidClientContext occ;
@@ -41,10 +41,11 @@ public class UpdateBioAction {
 		this.occ = OrcidClientContext.getInstance();
 	}
 
-	public OrcidMessage execute(OrcidMessage profile, AccessToken accessToken)
+	@Override
+	public OrcidProfile execute(OrcidMessage profile, AccessToken accessToken)
 			throws OrcidClientException {
 		try {
-			URI baseUri = new URI(occ.getSetting(Setting.AUTHORIZED_API_BASE_URL));
+			URI baseUri = new URI(occ.getApiMemberUrl());
 			String requestUrl = URIUtils.resolve(baseUri,
 					accessToken.getOrcid() + "/orcid-bio").toString();
 
@@ -64,8 +65,7 @@ public class UpdateBioAction {
 			Content content = response.returnContent();
 			String string = content.asString();
 			log.debug("Content from UpdateBio was: " + string);
-
-			return occ.unmarshall(string);
+			return Util.toModel(occ.unmarshall(string));
 		} catch (URISyntaxException e) {
 			throw new OrcidClientException(
 					"API_BASE_URL is not syntactically valid.", e);
