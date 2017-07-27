@@ -11,6 +11,31 @@
     <packaging>jar</packaging>
 
     <name>ORCiD Client API</name>
+    <description>Library for accessing the ORCiD API</description>
+    <url>http://vivoweb.org/</url>
+
+    <licenses>
+        <license>
+            <name>BSD 3-Clause License</name>
+            <url>https://raw.github.com/vivo-project/VIVO/develop/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Graham Triggs</name>
+            <email>gtriggs@duraspace.org</email>
+            <organization>DuraSpace</organization>
+            <organizationUrl>http://vivoweb.org/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Jim Blake</name>
+            <email>jeb228@cornell.edu</email>
+            <organization>Cornell University Library</organization>
+            <organizationUrl>https://github.com/j2blake</organizationUrl>
+        </developer>
+    </developers>
 
     <dependencies>
         <dependency>
