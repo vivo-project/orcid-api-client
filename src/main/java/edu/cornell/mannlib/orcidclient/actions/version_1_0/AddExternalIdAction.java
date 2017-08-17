@@ -141,7 +141,7 @@ public class AddExternalIdAction implements edu.cornell.mannlib.orcidclient.acti
 
 		OrcidMessage om = new OrcidMessage();
 		om.setOrcidProfile(op);
-		om.setMessageVersion(occ.getApiVersion());
+		om.setMessageVersion(occ.getApiVersion().toString());
 
 		return om;
 	}

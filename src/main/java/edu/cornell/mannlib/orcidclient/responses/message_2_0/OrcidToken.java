@@ -43,7 +43,7 @@ public class OrcidToken {
 
                         private class WorkExternalIdentifier {
                             @JsonProperty("work-external-identifier-id")
-                            VisibilityString workExternalIdentifierId;
+                            OrcidString workExternalIdentifierId;
 
                             @JsonProperty("work-external-identifier-type")
                             String workExternalIdentifierType;
@@ -54,7 +54,7 @@ public class OrcidToken {
         }
 
         private class OrcidBio {
-            VisibilityString biography;
+            OrcidString biography;
 
             @JsonProperty("contact-details")
             ContactDetails contactDetails;
@@ -72,7 +72,7 @@ public class OrcidToken {
                 Email[] email;
 
                 private class Address {
-                    VisibilityString country;
+                    OrcidString country;
                 }
 
                 private class Email {
@@ -83,16 +83,16 @@ public class OrcidToken {
             }
 
             private class Keywords {
-                VisibilityString[] keyword;
+                OrcidString[] keyword;
                 String visibility;
             }
 
             private class PersonalDetails {
                 @JsonProperty("family-name")
-                VisibilityString familyName;
+                OrcidString familyName;
 
                 @JsonProperty("given-names")
-                VisibilityString givenNames;
+                OrcidString givenNames;
             }
 
             private class ResearcherUrls {
@@ -101,10 +101,10 @@ public class OrcidToken {
                 String visibility;
 
                 private class ResearcherUrl {
-                    VisibilityString url;
+                    OrcidString url;
 
                     @JsonProperty("url-name")
-                    VisibilityString urlName;
+                    OrcidString urlName;
                 }
             }
         }

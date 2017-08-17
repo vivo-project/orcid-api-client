@@ -21,18 +21,27 @@ import edu.cornell.mannlib.orcidclient.actions.ApiAction;
 public class AuthorizationCache {
 	private static final Log log = LogFactory.getLog(AuthorizationCache.class);
 
-	private static final String ATTRIBUTE_NAME = AuthorizationCache.class
-			.getName();
+	private static final String ATTRIBUTE_NAME = AuthorizationCache.class.getName();
+
+	private static AuthorizationCache defaultCache = null;
 
 	public static AuthorizationCache getCache(HttpServletRequest req) {
-		HttpSession session = req.getSession();
-		Object o = session.getAttribute(ATTRIBUTE_NAME);
-		if (o instanceof AuthorizationCache) {
-			return (AuthorizationCache) o;
+		if (req == null) {
+			if (defaultCache == null) {
+				AuthorizationCache cache = new AuthorizationCache();
+				defaultCache = cache;
+			}
+			return defaultCache;
 		} else {
-			AuthorizationCache cache = new AuthorizationCache();
-			session.setAttribute(ATTRIBUTE_NAME, cache);
-			return cache;
+			HttpSession session = req.getSession();
+			Object o = session.getAttribute(ATTRIBUTE_NAME);
+			if (o instanceof AuthorizationCache) {
+				return (AuthorizationCache) o;
+			} else {
+				AuthorizationCache cache = new AuthorizationCache();
+				session.setAttribute(ATTRIBUTE_NAME, cache);
+				return cache;
+			}
 		}
 	}
 

@@ -92,7 +92,7 @@ public abstract class OrcidClientContext {
 
 	public abstract String getAccessTokenRequestUrl();
 
-	public abstract String getApiVersion();
+	public abstract OrcidAPIConfig.Versions getApiVersion();
 
 	public abstract String getApiPublicUrl();
 
@@ -147,7 +147,7 @@ public abstract class OrcidClientContext {
 		}
 
 		@Override
-		public String getApiVersion() {
+		public OrcidAPIConfig.Versions getApiVersion() {
 			throw new IllegalStateException(MESSAGE);
 		}
 

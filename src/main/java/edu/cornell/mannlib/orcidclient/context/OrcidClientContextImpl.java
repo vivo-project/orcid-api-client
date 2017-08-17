@@ -59,11 +59,9 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 
 			if ("2.0".equalsIgnoreCase(getSetting(API_VERSION))) {
 				if ("sandbox".equalsIgnoreCase(getSetting(API_ENVIRONMENT))) {
-//					apiConfig = OrcidAPIConfig.SANDBOX_2_0;
-					apiConfig = OrcidAPIConfig.SANDBOX_1_2;
+					apiConfig = OrcidAPIConfig.SANDBOX_2_0;
 				} else {
-//					apiConfig = OrcidAPIConfig.API_2_0;
-					apiConfig = OrcidAPIConfig.API_1_2;
+					apiConfig = OrcidAPIConfig.API_2_0;
 				}
 			} else {
 				if ("sandbox".equalsIgnoreCase(getSetting(API_ENVIRONMENT))) {
@@ -99,7 +97,7 @@ public class OrcidClientContextImpl extends OrcidClientContext {
 	}
 
 	@Override
-	public String getApiVersion() { return apiConfig.VERSION; }
+	public OrcidAPIConfig.Versions getApiVersion() { return apiConfig.VERSION; }
 
 	@Override
 	public String getApiPublicUrl() { return apiConfig.PUBLIC_URL; }

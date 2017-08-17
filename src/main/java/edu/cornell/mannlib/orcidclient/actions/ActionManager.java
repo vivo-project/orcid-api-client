@@ -4,9 +4,8 @@ package edu.cornell.mannlib.orcidclient.actions;
 
 import javax.servlet.http.HttpServletRequest;
 
-import edu.cornell.mannlib.orcidclient.actions.version_1_0.UpdateBioAction;
+import edu.cornell.mannlib.orcidclient.context.OrcidAPIConfig;
 import edu.cornell.mannlib.orcidclient.context.OrcidClientContext;
-import edu.cornell.mannlib.orcidclient.responses.message_1_2.OrcidMessage;
 
 /**
  * TODO
@@ -21,18 +20,34 @@ public class ActionManager {
 	}
 
 	public AddExternalIdAction createAddExternalIdAction() {
-		return new edu.cornell.mannlib.orcidclient.actions.version_1_0.AddExternalIdAction();
+		if (context.getApiVersion() == OrcidAPIConfig.Versions.V1_2) {
+			return new edu.cornell.mannlib.orcidclient.actions.version_1_0.AddExternalIdAction();
+		}
+
+		return new edu.cornell.mannlib.orcidclient.actions.version_2_0.AddExternalIdAction();
 	}
 
 	public ReadProfileAction createReadProfileAction() {
-		return new edu.cornell.mannlib.orcidclient.actions.version_1_0.ReadProfileAction();
+		if (context.getApiVersion() == OrcidAPIConfig.Versions.V1_2) {
+			return new edu.cornell.mannlib.orcidclient.actions.version_1_0.ReadProfileAction();
+		}
+
+		return new edu.cornell.mannlib.orcidclient.actions.version_2_0.ReadProfileAction();
 	}
 
 	public ReadPublicBioAction createReadPublicBioAction() {
-		return new edu.cornell.mannlib.orcidclient.actions.version_1_0.ReadPublicBioAction();
+		if (context.getApiVersion() == OrcidAPIConfig.Versions.V1_2) {
+			return new edu.cornell.mannlib.orcidclient.actions.version_1_0.ReadPublicBioAction();
+		}
+
+		return new edu.cornell.mannlib.orcidclient.actions.version_2_0.ReadPublicBioAction();
 	}
 
 	public UpdateBioAction createUpdateBioAction() {
-		return new edu.cornell.mannlib.orcidclient.actions.version_1_0.UpdateBioAction();
+		if (context.getApiVersion() == OrcidAPIConfig.Versions.V1_2) {
+			return new edu.cornell.mannlib.orcidclient.actions.version_1_0.UpdateBioAction();
+		}
+
+		return new edu.cornell.mannlib.orcidclient.actions.version_2_0.UpdateBioAction();
 	}
 }
