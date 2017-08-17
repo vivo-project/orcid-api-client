@@ -3,7 +3,7 @@
 package edu.cornell.mannlib.orcidclient.testwebapp;
 
 import static edu.cornell.mannlib.orcidclient.actions.ApiAction.ADD_EXTERNAL_ID;
-import static edu.cornell.mannlib.orcidclient.orcidmessage.Visibility.PUBLIC;
+import static edu.cornell.mannlib.orcidclient.responses.message_1_2.Visibility.PUBLIC;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -18,7 +18,7 @@ import edu.cornell.mannlib.orcidclient.actions.AddExternalIdAction;
 import edu.cornell.mannlib.orcidclient.actions.ApiAction;
 import edu.cornell.mannlib.orcidclient.auth.AuthorizationStatus;
 import edu.cornell.mannlib.orcidclient.beans.ExternalId;
-import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.OrcidMessage;
 
 /**
  * TODO

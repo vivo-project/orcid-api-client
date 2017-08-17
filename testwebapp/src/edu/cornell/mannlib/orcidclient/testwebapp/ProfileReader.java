@@ -16,7 +16,7 @@ import edu.cornell.mannlib.orcidclient.OrcidClientException;
 import edu.cornell.mannlib.orcidclient.actions.ApiAction;
 import edu.cornell.mannlib.orcidclient.actions.ReadProfileAction;
 import edu.cornell.mannlib.orcidclient.auth.AuthorizationStatus;
-import edu.cornell.mannlib.orcidclient.orcidmessage.OrcidMessage;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.OrcidMessage;
 
 /**
  * TODO

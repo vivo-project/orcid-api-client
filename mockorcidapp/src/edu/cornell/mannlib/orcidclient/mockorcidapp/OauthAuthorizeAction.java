@@ -11,7 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.cornell.mannlib.orcidclient.orcidmessage.ScopePathType;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.ScopePathType;
 
 /**
  * TODO

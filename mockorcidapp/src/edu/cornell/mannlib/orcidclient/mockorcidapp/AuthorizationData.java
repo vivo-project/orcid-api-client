@@ -4,7 +4,7 @@ package edu.cornell.mannlib.orcidclient.mockorcidapp;
 
 import edu.cornell.mannlib.orcidclient.auth.AccessToken;
 import edu.cornell.mannlib.orcidclient.auth.AccessTokenFormatException;
-import edu.cornell.mannlib.orcidclient.orcidmessage.ScopePathType;
+import edu.cornell.mannlib.orcidclient.responses.message_1_2.ScopePathType;
 
 /**
  * Hold all of the info regarding an Authorization. Created when an app requests
