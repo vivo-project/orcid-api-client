@@ -20,7 +20,7 @@ public class OrcidAddress {
         return createdDate;
     }
 
-    @JsonSetter("create-date")
+    @JsonSetter("created-date")
     public void setCreatedDate(OrcidDate createdDate) {
         this.createdDate = createdDate;
     }
