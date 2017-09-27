@@ -10,9 +10,9 @@ public enum ApiAction {
 	
 	AUTHENTICATE("/authenticate"),
 
-	READ_PROFILE("/orcid-profile/read-limited"),
+	READ_PROFILE("/read-limited"),
 
-	ADD_EXTERNAL_ID("/orcid-bio/external-identifiers/create"),
+	ADD_EXTERNAL_ID("/person/update"),
 
 	UPDATE_BIO("/orcid-bio/update");
 
