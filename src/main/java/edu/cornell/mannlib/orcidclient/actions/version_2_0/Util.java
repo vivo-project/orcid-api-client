@@ -9,12 +9,16 @@ import edu.cornell.mannlib.orcidclient.responses.message_2_0.OrcidPerson;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.client.utils.HttpClientUtils;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.util.EntityUtils;
 
 import javax.naming.Name;
+import javax.swing.text.html.parser.Entity;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -22,8 +26,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Util {
-    private static final CloseableHttpClient httpClient =
-            HttpClientBuilder.create().setMaxConnPerRoute(50).setMaxConnTotal(300).build();
+    private static PoolingClientConnectionManager cm;
+    private static final HttpClient httpClient;
+
+    static {
+        cm = new PoolingClientConnectionManager();
+        cm.setDefaultMaxPerRoute(50);
+        cm.setMaxTotal(300);
+        httpClient = new DefaultHttpClient(cm);
+    }
 
     /**
      * Read JSON from the URL
@@ -45,14 +56,18 @@ public class Util {
                 }
             }
 
-            HttpResponse response = httpClient.execute(request);
-            switch (response.getStatusLine().getStatusCode()) {
-                case 200:
-                    try (InputStream in = response.getEntity().getContent()) {
-                        StringWriter writer = new StringWriter();
-                        IOUtils.copy(in, writer, "UTF-8");
-                        return writer.toString();
-                    }
+            HttpResponse response = httpClient.execute(request, new BasicHttpContext());
+            try {
+                switch (response.getStatusLine().getStatusCode()) {
+                    case 200:
+                        try (InputStream in = response.getEntity().getContent()) {
+                            StringWriter writer = new StringWriter();
+                            IOUtils.copy(in, writer, "UTF-8");
+                            return writer.toString();
+                        }
+                }
+            } finally {
+                EntityUtils.consumeQuietly(response.getEntity());
             }
         } catch (IOException e) {
         }
