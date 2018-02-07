@@ -31,12 +31,12 @@ public class OrcidAPIConfig {
             this.PUBLIC_URL = "https://pub.sandbox.orcid.org/" + version.toString() + "/";
             this.MEMBER_URL = "https://api.sandbox.orcid.org/" + version.toString() + "/";
             this.OAUTH_URL = "https://sandbox.orcid.org/oauth/authorize";
-            this.TOKEN_URL = "https://api.sandbox.orcid.org/oauth/token";
+            this.TOKEN_URL = "https://sandbox.orcid.org/oauth/token";
         } else {
             this.PUBLIC_URL = "https://pub.orcid.org/" + version.toString() + "/";
             this.MEMBER_URL = "https://api.orcid.org/" + version.toString() + "/";
             this.OAUTH_URL = "https://orcid.org/oauth/authorize";
-            this.TOKEN_URL = "https://api.orcid.org/oauth/token";
+            this.TOKEN_URL = "https://orcid.org/oauth/token";
         }
     }
 }
