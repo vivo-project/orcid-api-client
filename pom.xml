@@ -7,7 +7,7 @@
 
     <groupId>org.vivoweb</groupId>
     <artifactId>orcid-api-client</artifactId>
-    <version>0.6.2</version>
+    <version>0.6.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>ORCiD Client API</name>
@@ -103,7 +103,13 @@
             </properties>
         </profile>
         <profile>
-            <id>release</id>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -261,7 +267,7 @@
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.3</version>
+                    <version>1.6.7</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -279,5 +285,9 @@
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
 </project>
