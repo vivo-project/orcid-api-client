@@ -66,12 +66,6 @@ public class ReadProfileAction implements edu.cornell.mannlib.orcidclient.action
 		} catch (URISyntaxException e) {
 			throw new OrcidClientException(
 					"API_BASE_URL is not syntactically valid.", e);
-		} catch (HttpResponseException e) {
-			// Bad status code? Something funky.
-			log.error("HttpResponse status code: " + e.getStatusCode());
-			throw new OrcidClientException(
-					"Failed to read profile. HTTP status code="
-							+ e.getStatusCode(), e);
 		} catch (IOException e) {
 			throw new OrcidClientException("Failed to read profile", e);
 		}
